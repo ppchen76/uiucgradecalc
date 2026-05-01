@@ -19,6 +19,7 @@
         .success { background-color: #dafbe1; border-color: #4ac26b; }
         .warning { background-color: #fff8c5; border-color: #d4a72c; }
         hr { border: 0; border-top: 1px solid #d0d7de; margin: 20px 0; }
+        .mid-grid { display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 10px; }
     </style>
 </head>
 <body>
@@ -48,18 +49,21 @@
             <input type="number" id="labHW" placeholder="%">
         </div>
         <div>
-            <label>Python Quizzes (6% total)</label>
-            <input type="number" id="pyQuiz" placeholder="Avg % of both">
+            <label>Python Quizzes (6%)</label>
+            <input type="number" id="pyQuiz" placeholder="Avg %">
         </div>
+        
         <div class="full"><hr></div>
-        <div>
-            <label>Midterm 1 (16%)</label>
-            <input type="number" id="m1" placeholder="%">
+        
+        <div class="full">
+            <label>Midterm Scores (16% each)</label>
+            <div class="mid-grid">
+                <input type="number" id="m1" placeholder="M1">
+                <input type="number" id="m2" placeholder="M2">
+                <input type="number" id="m3" placeholder="M3">
+            </div>
         </div>
-        <div>
-            <label>Midterm 2 (16%)</label>
-            <input type="number" id="m2" placeholder="%">
-        </div>
+
         <div class="full">
             <label>Target Class Grade (%)</label>
             <input type="number" id="target" placeholder="e.g., 90">
@@ -73,7 +77,6 @@
 
 <script>
     function calculate() {
-        // Scores
         const sQ = parseFloat(document.getElementById('sylQuiz').value) || 0;
         const att = parseFloat(document.getElementById('attend').value) || 0;
         const lA = parseFloat(document.getElementById('labAtt').value) || 0;
@@ -82,25 +85,23 @@
         const pQ = parseFloat(document.getElementById('pyQuiz').value) || 0;
         const m1 = parseFloat(document.getElementById('m1').value) || 0;
         const m2 = parseFloat(document.getElementById('m2').value) || 0;
+        const m3 = parseFloat(document.getElementById('m3').value) || 0;
         const target = parseFloat(document.getElementById('target').value);
 
         if (isNaN(target)) { alert("Please enter a target grade."); return; }
 
-        // Weights
-        const wSQ = 0.02, wAtt = 0.03, wLA = 0.10, wNHW = 0.08, wLHW = 0.05, wPQ = 0.06;
-        const wMid = 0.16, wFinal = 0.18;
+        const wFixed = (sQ * 0.02) + (att * 0.03) + (lA * 0.10) + (nHW * 0.08) + (lHW * 0.05) + (pQ * 0.06);
 
-        // Current points from fixed categories
-        const fixedPoints = (sQ * wSQ) + (att * wAtt) + (lA * wLA) + (nHW * wNHW) + (lHW * wLHW) + (pQ * wPQ);
-
-        // Midterm Replacement Logic
-        const lowestMid = Math.min(m1, m2);
-        const bestMid = Math.max(m1, m2);
+        const midterms = [m1, m2, m3];
+        const lowestMid = Math.min(...midterms);
+        const sumOtherMids = midterms.reduce((a, b) => a + b, 0) - lowestMid;
         
-        // Equation: Target = fixedPoints + (bestMid * wMid) + [Final * (wFinal + wMid)]
-        const pointsNeeded = target - fixedPoints - (bestMid * wMid);
-        const effectiveWeight = wFinal + wMid; // 0.18 + 0.16 = 0.34
+        // Final (18%) replaces lowest Midterm (16%)
+        // Points needed = Target - FixedPoints - (Remaining Midterms * 0.16)
+        // Effective Weight = 0.18 (Final) + 0.16 (Replacement) = 0.34
         
+        const pointsNeeded = target - wFixed - (sumOtherMids * 0.16);
+        const effectiveWeight = 0.34;
         const needed = pointsNeeded / effectiveWeight;
 
         const res = document.getElementById('result');
@@ -108,10 +109,10 @@
         res.className = needed > 100 ? 'warning' : 'success';
         
         if (needed <= 0) {
-            res.innerHTML = `🎉 You already hit your goal! You can get a 0% on the final.`;
+            res.innerHTML = `🎉 You've reached your goal! You can get a 0% on the final.`;
         } else {
-            res.innerHTML = `To finish with a ${target}%, you need a <strong>${needed.toFixed(2)}%</strong> on the final.<br>
-            <small>(This replaces your ${lowestMid}% midterm)</small>`;
+            res.innerHTML = `To get a ${target}%, you need a <strong>${needed.toFixed(2)}%</strong> on the final.<br>
+            <small>(Replaces your ${lowestMid}% midterm)</small>`;
         }
     }
 </script>
