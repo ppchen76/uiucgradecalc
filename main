@@ -3,87 +3,116 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Grade Goal Calculator (With Replacement)</title>
+    <title>Course Grade Calculator</title>
     <style>
-        body { font-family: sans-serif; display: flex; justify-content: center; padding: 20px; background-color: #f0f2f5; }
-        .card { background: white; padding: 2rem; border-radius: 12px; box-shadow: 0 4px 10px rgba(0,0,0,0.1); width: 100%; max-width: 450px; }
-        h2 { color: #1a73e8; margin-top: 0; text-align: center; }
-        .info { font-size: 0.85rem; color: #666; margin-bottom: 20px; background: #eef3fc; padding: 10px; border-radius: 6px; }
-        label { display: block; margin: 10px 0 5px; font-weight: bold; font-size: 0.9rem; }
-        input { width: 100%; padding: 10px; margin-bottom: 10px; border: 1px solid #ccc; border-radius: 6px; box-sizing: border-box; }
-        .row { display: flex; gap: 10px; }
-        button { width: 100%; padding: 14px; background-color: #1a73e8; color: white; border: none; border-radius: 6px; cursor: pointer; font-size: 1rem; margin-top: 10px; }
-        button:hover { background-color: #1557b0; }
-        #result { margin-top: 20px; padding: 15px; border-radius: 6px; display: none; text-align: center; line-height: 1.5; }
+        :root { --primary: #2da44e; --bg: #f6f8fa; --text: #24292f; }
+        body { font-family: -apple-system, sans-serif; background-color: var(--bg); color: var(--text); display: flex; justify-content: center; padding: 20px; }
+        .container { background: white; border: 1px solid #d0d7de; border-radius: 8px; padding: 24px; width: 100%; max-width: 450px; box-shadow: 0 8px 24px rgba(0,0,0,0.1); }
+        h2 { text-align: center; margin-top: 0; color: #1b1f23; }
+        .grid { display: grid; grid-template-columns: 1fr 1fr; gap: 15px; }
+        .full { grid-column: span 2; }
+        label { display: block; font-weight: 600; font-size: 13px; margin-bottom: 4px; color: #57606a; }
+        input { width: 100%; padding: 10px; border: 1px solid #d0d7de; border-radius: 6px; box-sizing: border-box; font-size: 15px; }
+        button { width: 100%; background-color: var(--primary); color: white; border: none; border-radius: 6px; padding: 14px; font-weight: 600; font-size: 16px; cursor: pointer; margin-top: 20px; }
+        button:hover { background-color: #2c974b; }
+        #result { margin-top: 20px; padding: 15px; border-radius: 6px; display: none; text-align: center; border: 1px solid transparent; line-height: 1.4; }
+        .success { background-color: #dafbe1; border-color: #4ac26b; }
+        .warning { background-color: #fff8c5; border-color: #d4a72c; }
+        hr { border: 0; border-top: 1px solid #d0d7de; margin: 20px 0; }
+        .mid-grid { display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 10px; }
     </style>
 </head>
 <body>
 
-<div class="card">
-    <h2>Smart Grade Calc</h2>
-    <p class="info">This calculator replaces your lowest midterm with your Final Exam score automatically.</p>
+<div class="container">
+    <h2>Grade Calculator</h2>
     
-    <label>Midterm Scores (%)</label>
-    <div class="row">
-        <input type="number" id="m1" placeholder="M1">
-        <input type="number" id="m2" placeholder="M2">
-        <input type="number" id="m3" placeholder="M3">
+    <div class="grid">
+        <div>
+            <label>Syllabus Quiz (2%)</label>
+            <input type="number" id="sylQuiz" placeholder="%">
+        </div>
+        <div>
+            <label>Attendance (3%)</label>
+            <input type="number" id="attend" placeholder="%">
+        </div>
+        <div>
+            <label>Online Lab Att. (10%)</label>
+            <input type="number" id="labAtt" placeholder="%">
+        </div>
+        <div>
+            <label>Nonlab HW (8%)</label>
+            <input type="number" id="nlHW" placeholder="%">
+        </div>
+        <div>
+            <label>Lab HW (5%)</label>
+            <input type="number" id="labHW" placeholder="%">
+        </div>
+        <div>
+            <label>Python Quizzes (6%)</label>
+            <input type="number" id="pyQuiz" placeholder="Avg %">
+        </div>
+        
+        <div class="full"><hr></div>
+        
+        <div class="full">
+            <label>Midterm Scores (16% each)</label>
+            <div class="mid-grid">
+                <input type="number" id="m1" placeholder="M1">
+                <input type="number" id="m2" placeholder="M2">
+                <input type="number" id="m3" placeholder="M3">
+            </div>
+        </div>
+
+        <div class="full">
+            <label>Target Class Grade (%)</label>
+            <input type="number" id="target" placeholder="e.g., 90">
+        </div>
     </div>
 
-    <label>Other Grades Average (HW, Quiz, etc %)</label>
-    <input type="number" id="other" placeholder="e.g. 95">
-
-    <label>Target Class Grade (%)</label>
-    <input type="number" id="target" placeholder="e.g. 90">
-
-    <hr style="border: 0; border-top: 1px solid #eee; margin: 20px 0;">
-    
-    <label>Weight of EACH Midterm (%)</label>
-    <input type="number" id="wMid" placeholder="e.g. 15">
-
-    <label>Weight of Final Exam (%)</label>
-    <input type="number" id="wFinal" placeholder="e.g. 25">
-
-    <button onclick="calculateReplacement()">Calculate Goal</button>
+    <button onclick="calculate()">Calculate Required Final Score</button>
 
     <div id="result"></div>
 </div>
 
 <script>
-    function calculateReplacement() {
-        // Inputs
+    function calculate() {
+        const sQ = parseFloat(document.getElementById('sylQuiz').value) || 0;
+        const att = parseFloat(document.getElementById('attend').value) || 0;
+        const lA = parseFloat(document.getElementById('labAtt').value) || 0;
+        const nHW = parseFloat(document.getElementById('nlHW').value) || 0;
+        const lHW = parseFloat(document.getElementById('labHW').value) || 0;
+        const pQ = parseFloat(document.getElementById('pyQuiz').value) || 0;
         const m1 = parseFloat(document.getElementById('m1').value) || 0;
         const m2 = parseFloat(document.getElementById('m2').value) || 0;
         const m3 = parseFloat(document.getElementById('m3').value) || 0;
-        const other = parseFloat(document.getElementById('other').value) || 0;
         const target = parseFloat(document.getElementById('target').value);
-        
-        // Weights
-        const wMid = parseFloat(document.getElementById('wMid').value) / 100;
-        const wFinal = parseFloat(document.getElementById('wFinal').value) / 100;
-        
-        const midterms = [m1, m2, m3];
-        const lowestMidterm = Math.min(...midterms);
-        const otherMidtermsSum = midterms.reduce((a, b) => a + b, 0) - lowestMidterm;
-        
-        // Weight of "Other" (everything else)
-        const wOther = 1 - (wMid * 3) - wFinal;
-        
-        // Logic: Target = (Remaining Midterms * wMid) + (Other * wOther) + (Final * wFinal) + (Final replaces lowest Midterm * wMid)
-        // Simplified: Target = (Remaining Midterms * wMid) + (Other * wOther) + [Final * (wFinal + wMid)]
-        
-        const knownPoints = (otherMidtermsSum * wMid) + (other * wOther);
-        const requiredWeight = wFinal + wMid;
-        const needed = (target - knownPoints) / requiredWeight;
 
-        const resultDiv = document.getElementById('result');
-        resultDiv.style.display = 'block';
-        resultDiv.style.backgroundColor = needed > 100 ? '#fce8e6' : '#e6f4ea';
+        if (isNaN(target)) { alert("Please enter a target grade."); return; }
+
+        const wFixed = (sQ * 0.02) + (att * 0.03) + (lA * 0.10) + (nHW * 0.08) + (lHW * 0.05) + (pQ * 0.06);
+
+        const midterms = [m1, m2, m3];
+        const lowestMid = Math.min(...midterms);
+        const sumOtherMids = midterms.reduce((a, b) => a + b, 0) - lowestMid;
+        
+        // Final (18%) replaces lowest Midterm (16%)
+        // Points needed = Target - FixedPoints - (Remaining Midterms * 0.16)
+        // Effective Weight = 0.18 (Final) + 0.16 (Replacement) = 0.34
+        
+        const pointsNeeded = target - wFixed - (sumOtherMids * 0.16);
+        const effectiveWeight = 0.34;
+        const needed = pointsNeeded / effectiveWeight;
+
+        const res = document.getElementById('result');
+        res.style.display = 'block';
+        res.className = needed > 100 ? 'warning' : 'success';
         
         if (needed <= 0) {
-            resultDiv.innerHTML = "You're golden! You can get a 0% on the final and still hit your goal.";
+            res.innerHTML = `🎉 You've reached your goal! You can get a 0% on the final.`;
         } else {
-            resultDiv.innerHTML = `Since it replaces your ${lowestMidterm}%, you need a <strong>${needed.toFixed(2)}%</strong> on the final to get a ${target}% total.`;
+            res.innerHTML = `To get a ${target}%, you need a <strong>${needed.toFixed(2)}%</strong> on the final.<br>
+            <small>(Replaces your ${lowestMid}% midterm)</small>`;
         }
     }
 </script>
