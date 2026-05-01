@@ -1,0 +1,92 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Grade Goal Calculator (With Replacement)</title>
+    <style>
+        body { font-family: sans-serif; display: flex; justify-content: center; padding: 20px; background-color: #f0f2f5; }
+        .card { background: white; padding: 2rem; border-radius: 12px; box-shadow: 0 4px 10px rgba(0,0,0,0.1); width: 100%; max-width: 450px; }
+        h2 { color: #1a73e8; margin-top: 0; text-align: center; }
+        .info { font-size: 0.85rem; color: #666; margin-bottom: 20px; background: #eef3fc; padding: 10px; border-radius: 6px; }
+        label { display: block; margin: 10px 0 5px; font-weight: bold; font-size: 0.9rem; }
+        input { width: 100%; padding: 10px; margin-bottom: 10px; border: 1px solid #ccc; border-radius: 6px; box-sizing: border-box; }
+        .row { display: flex; gap: 10px; }
+        button { width: 100%; padding: 14px; background-color: #1a73e8; color: white; border: none; border-radius: 6px; cursor: pointer; font-size: 1rem; margin-top: 10px; }
+        button:hover { background-color: #1557b0; }
+        #result { margin-top: 20px; padding: 15px; border-radius: 6px; display: none; text-align: center; line-height: 1.5; }
+    </style>
+</head>
+<body>
+
+<div class="card">
+    <h2>Smart Grade Calc</h2>
+    <p class="info">This calculator replaces your lowest midterm with your Final Exam score automatically.</p>
+    
+    <label>Midterm Scores (%)</label>
+    <div class="row">
+        <input type="number" id="m1" placeholder="M1">
+        <input type="number" id="m2" placeholder="M2">
+        <input type="number" id="m3" placeholder="M3">
+    </div>
+
+    <label>Other Grades Average (HW, Quiz, etc %)</label>
+    <input type="number" id="other" placeholder="e.g. 95">
+
+    <label>Target Class Grade (%)</label>
+    <input type="number" id="target" placeholder="e.g. 90">
+
+    <hr style="border: 0; border-top: 1px solid #eee; margin: 20px 0;">
+    
+    <label>Weight of EACH Midterm (%)</label>
+    <input type="number" id="wMid" placeholder="e.g. 15">
+
+    <label>Weight of Final Exam (%)</label>
+    <input type="number" id="wFinal" placeholder="e.g. 25">
+
+    <button onclick="calculateReplacement()">Calculate Goal</button>
+
+    <div id="result"></div>
+</div>
+
+<script>
+    function calculateReplacement() {
+        // Inputs
+        const m1 = parseFloat(document.getElementById('m1').value) || 0;
+        const m2 = parseFloat(document.getElementById('m2').value) || 0;
+        const m3 = parseFloat(document.getElementById('m3').value) || 0;
+        const other = parseFloat(document.getElementById('other').value) || 0;
+        const target = parseFloat(document.getElementById('target').value);
+        
+        // Weights
+        const wMid = parseFloat(document.getElementById('wMid').value) / 100;
+        const wFinal = parseFloat(document.getElementById('wFinal').value) / 100;
+        
+        const midterms = [m1, m2, m3];
+        const lowestMidterm = Math.min(...midterms);
+        const otherMidtermsSum = midterms.reduce((a, b) => a + b, 0) - lowestMidterm;
+        
+        // Weight of "Other" (everything else)
+        const wOther = 1 - (wMid * 3) - wFinal;
+        
+        // Logic: Target = (Remaining Midterms * wMid) + (Other * wOther) + (Final * wFinal) + (Final replaces lowest Midterm * wMid)
+        // Simplified: Target = (Remaining Midterms * wMid) + (Other * wOther) + [Final * (wFinal + wMid)]
+        
+        const knownPoints = (otherMidtermsSum * wMid) + (other * wOther);
+        const requiredWeight = wFinal + wMid;
+        const needed = (target - knownPoints) / requiredWeight;
+
+        const resultDiv = document.getElementById('result');
+        resultDiv.style.display = 'block';
+        resultDiv.style.backgroundColor = needed > 100 ? '#fce8e6' : '#e6f4ea';
+        
+        if (needed <= 0) {
+            resultDiv.innerHTML = "You're golden! You can get a 0% on the final and still hit your goal.";
+        } else {
+            resultDiv.innerHTML = `Since it replaces your ${lowestMidterm}%, you need a <strong>${needed.toFixed(2)}%</strong> on the final to get a ${target}% total.`;
+        }
+    }
+</script>
+
+</body>
+</html>
