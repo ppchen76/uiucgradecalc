@@ -1,159 +1,67 @@
-<!DOCTYPE html>
-<html lang="en">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Multi-Subject Grade Tracker</title>
-    <style>
-        :root { --primary: #0969da; --bg: #f6f8fa; --border: #d0d7de; --success: #2da44e; }
-        body { font-family: -apple-system, sans-serif; background: var(--bg); padding: 20px; display: flex; justify-content: center; }
-        .container { background: white; border: 1px solid var(--border); border-radius: 8px; padding: 24px; width: 100%; max-width: 500px; box-shadow: 0 4px 12px rgba(0,0,0,0.05); }
-        h1 { font-size: 22px; margin-bottom: 20px; text-align: center; color: #1b1f23; }
-        .setup-box { background: #f0f7ff; border: 1px dashed var(--primary); padding: 15px; border-radius: 8px; margin-bottom: 20px; }
-        label { display: block; font-size: 13px; font-weight: 600; margin-bottom: 4px; margin-top: 10px; }
-        input, select { width: 100%; padding: 10px; border: 1px solid var(--border); border-radius: 6px; box-sizing: border-box; font-size: 14px; margin-bottom: 10px; }
-        .btn { width: 100%; padding: 12px; border: none; border-radius: 6px; font-weight: 600; cursor: pointer; font-size: 15px; }
-        .btn-add { background: var(--primary); color: white; }
-        .btn-calc { background: var(--success); color: white; margin-top: 15px; }
-        .btn-del { background: #cf222e; color: white; margin-top: 10px; padding: 8px; font-size: 13px; }
-        .tab-buttons { display: flex; gap: 8px; margin-bottom: 20px; overflow-x: auto; border-bottom: 1px solid var(--border); }
-        .tab-btn { padding: 8px 16px; border: 1px solid var(--border); border-radius: 6px 6px 0 0; background: #f6f8fa; cursor: pointer; font-weight: 500; }
-        .tab-btn.active { background: white; border-bottom-color: white; color: var(--primary); }
-        #result { margin-top: 20px; padding: 15px; border-radius: 6px; display: none; text-align: center; font-weight: bold; border: 1px solid #4ac26b; background: #dafbe1; }
-        .grid { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; }
-    </style>
-</head>
-<body>
-
-<div class="container">
-    <h1>My Grade Hub</h1>
-
-    <div class="setup-box">
-        <label>Subject Name</label>
-        <input type="text" id="newSubName" placeholder="e.g. Physics 212">
-        <label>Grading Type</label>
-        <select id="newSubMode">
-            <option value="phys212">Physics 212 (UIUC Point System)</option>
-            <option value="python">Python Class (Midterm Replacement)</option>
-            <option value="normal">Normal Class (Weighted %)</option>
-        </select>
-        <button class="btn btn-add" onclick="addSubject()">+ Add Subject</button>
-    </div>
-
-    <div id="subjectTabs" class="tab-buttons"></div>
-
-    <div id="calcArea" style="display:none;">
-        <h2 id="currentSubTitle"></h2>
-        <div id="inputFields"></div>
-
-        <label>Target Grade</label>
-        <select id="targetGrade">
+function loadSubject(name) {
+    activeSub = name;
+    renderTabs();
+    const sub = subjects[name];
+    document.getElementById('calcArea').style.display = 'block';
+    document.getElementById('currentSubTitle').innerText = name;
+    
+    let html = '';
+    if (sub.mode === 'phys212') {
+        html = `
+            <p style="font-size:12px; color:#666;">Enter total points <b>after drops</b>. (Check your course gradebook for these totals).</p>
+            <div class="grid">
+                <div><label>Prelectures (Max 25)</label><input type="number" oninput="update('pl', this.value)" value="${sub.data.pl||''}"></div>
+                <div><label>Checkpoints (Max 25)</label><input type="number" oninput="update('cp', this.value)" value="${sub.data.cp||''}"></div>
+                <div><label>iClicker (Max 25)</label><input type="number" oninput="update('ic', this.value)" value="${sub.data.ic||''}"></div>
+                <div><label>Homework (Max 140)</label><input type="number" oninput="update('hw', this.value)" value="${sub.data.hw||''}"></div>
+                <div><label>Disc. Quizzes (Max 140)</label><input type="number" oninput="update('disc', this.value)" value="${sub.data.disc||''}"></div>
+                <div><label>Prelabs (Max 30)</label><input type="number" oninput="update('prel', this.value)" value="${sub.data.prel||''}"></div>
+                <div><label>Labs (Max 100)</label><input type="number" oninput="update('lab', this.value)" value="${sub.data.lab||''}"></div>
+                <div><label>Lab Practical (Max 15)</label><input type="number" oninput="update('prac', this.value)" value="${sub.data.prac||''}"></div>
+                <div class="full"><label>Bonus Points (Max 25)</label><input type="number" oninput="update('bonus', this.value)" value="${sub.data.bonus||''}"></div>
+            </div>
+            <label>Hour Exams (Sum of 3, Max 300)</label>
+            <input type="number" placeholder="Exam 1 + 2 + 3" oninput="update('exams', this.value)" value="${sub.data.exams||''}">
+        `;
+        document.getElementById('targetGrade').innerHTML = `
+            <option value="950">A+ (950 pts)</option>
             <option value="920">A (920 pts)</option>
+            <option value="900">A- (900 pts)</option>
             <option value="880">B+ (880 pts)</option>
             <option value="860">B (860 pts)</option>
             <option value="780">C (780 pts)</option>
-        </select>
+        `;
+    } 
+    // ... (rest of your loadSubject logic for Python/Normal)
+    document.getElementById('inputFields').innerHTML = html;
+}
 
-        <button class="btn btn-calc" onclick="calculate()">Calculate Final Exam Needed</button>
-        <button class="btn btn-del" onclick="deleteSubject()">Remove Subject</button>
-        <div id="result"></div>
-    </div>
-</div>
+function calculate() {
+    const sub = subjects[activeSub];
+    const target = parseFloat(document.getElementById('targetGrade').value);
+    let resultText = "";
 
-<script>
-    let subjects = JSON.parse(localStorage.getItem('gradeData')) || {};
-    let activeSub = null;
-
-    function save() { localStorage.setItem('gradeData', JSON.stringify(subjects)); }
-
-    function addSubject() {
-        const name = document.getElementById('newSubName').value;
-        const mode = document.getElementById('newSubMode').value;
-        if (!name) return;
-        subjects[name] = { mode: mode, data: {} };
-        save();
-        renderTabs();
-    }
-
-    function renderTabs() {
-        const tabs = document.getElementById('subjectTabs');
-        tabs.innerHTML = '';
-        Object.keys(subjects).forEach(name => {
-            const b = document.createElement('button');
-            b.className = `tab-btn ${activeSub === name ? 'active' : ''}`;
-            b.innerText = name;
-            b.onclick = () => loadSubject(name);
-            tabs.appendChild(b);
-        });
-    }
-
-    function loadSubject(name) {
-        activeSub = name;
-        renderTabs();
-        const sub = subjects[name];
-        document.getElementById('calcArea').style.display = 'block';
-        document.getElementById('currentSubTitle').innerText = name;
+    if (sub.mode === 'phys212') {
+        const d = sub.data;
+        // The drops are already handled by your course gradebook, 
+        // so we sum the categories as they appear there.
+        const currentPoints = (d.pl||0) + (d.cp||0) + (d.ic||0) + (d.hw||0) + 
+                              (d.disc||0) + (d.prel||0) + (d.lab||0) + 
+                              (d.prac||0) + (d.bonus||0) + (d.exams||0);
         
-        let html = '';
-        if (sub.mode === 'phys212') {
-            html = `
-                <p style="font-size:12px; color:#666;">Enter your total points earned in each category (Check syllabus for max points).</p>
-                <div class="grid">
-                    <div><label>Lecture/HW (Max 215)</label><input type="number" oninput="update('lec', this.value)" value="${sub.data.lec||''}"></div>
-                    <div><label>Disc. Quizzes (Max 140)</label><input type="number" oninput="update('disc', this.value)" value="${sub.data.disc||''}"></div>
-                    <div><label>Lab Total (Max 145)</label><input type="number" oninput="update('lab', this.value)" value="${sub.data.lab||''}"></div>
-                    <div><label>Bonus Points (Max 25)</label><input type="number" oninput="update('bonus', this.value)" value="${sub.data.bonus||''}"></div>
-                </div>
-                <label>Hour Exams (Enter 3 Exam Sum, Max 300)</label>
-                <input type="number" placeholder="Sum of 3 exams" oninput="update('exams', this.value)" value="${sub.data.exams||''}">
-            `;
-            // Set Target Grade options to Physics Scale
-            document.getElementById('targetGrade').innerHTML = `
-                <option value="950">A+ (950 pts)</option>
-                <option value="920">A (920 pts)</option>
-                <option value="900">A- (900 pts)</option>
-                <option value="880">B+ (880 pts)</option>
-                <option value="860">B (860 pts)</option>
-                <option value="835">B- (835 pts)</option>
-                <option value="780">C (780 pts)</option>
-            `;
-        } else if (sub.mode === 'python') {
-            html = `<p>... (Existing Python Inputs) ...</p>`; // Keep previous Python logic here
+        const pointsNeededOnFinal = target - currentPoints;
+        const percentageNeeded = (pointsNeededOnFinal / 200) * 100;
+
+        if (pointsNeededOnFinal <= 0) {
+            resultText = "🎉 You've already reached your goal points!";
+        } else if (pointsNeededOnFinal > 200) {
+            resultText = `⚠️ You need ${pointsNeededOnFinal.toFixed(1)} points, which is more than the 200 available.`;
         } else {
-            html = `
-                <label>Current Grade (%)</label><input type="number" oninput="update('cur', this.value)" value="${sub.data.cur||''}">
-                <label>Final Weight (%)</label><input type="number" oninput="update('fw', this.value)" value="${sub.data.fw||''}">
-            `;
-            document.getElementById('targetGrade').innerHTML = `
-                <option value="90">A (90%)</option><option value="80">B (80%)</option>
-            `;
+            resultText = `You need <strong>${pointsNeededOnFinal.toFixed(1)}/200</strong> on the final (${percentageNeeded.toFixed(1)}%).`;
         }
-        document.getElementById('inputFields').innerHTML = html;
     }
-
-    function update(key, val) { subjects[activeSub].data[key] = parseFloat(val); save(); }
-
-    function calculate() {
-        const sub = subjects[activeSub];
-        const target = parseFloat(document.getElementById('targetGrade').value);
-        let resultText = "";
-
-        if (sub.mode === 'phys212') {
-            const d = sub.data;
-            const currentPoints = (d.lec||0) + (d.disc||0) + (d.lab||0) + (d.bonus||0) + (d.exams||0);
-            const needed = target - currentPoints;
-            const percentage = (needed / 200) * 100;
-            resultText = `You need <strong>${needed.toFixed(1)}</strong> points on the final (${percentage.toFixed(1)}%).`;
-        } else {
-            // (Standard weighted average logic from previous step)
-        }
-
-        const res = document.getElementById('result');
-        res.style.display = 'block';
-        res.innerHTML = resultText;
-    }
-
-    renderTabs();
-</script>
-</body>
-</html>
+    // ... (rest of your calculate logic)
+    const res = document.getElementById('result');
+    res.style.display = 'block';
+    res.innerHTML = resultText;
+}
