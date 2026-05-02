@@ -1,67 +1,127 @@
-function loadSubject(name) {
-    activeSub = name;
-    renderTabs();
-    const sub = subjects[name];
-    document.getElementById('calcArea').style.display = 'block';
-    document.getElementById('currentSubTitle').innerText = name;
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>UIUC Physics 212 Tracker</title>
+    <style>
+        :root { --primary: #0969da; --bg: #f6f8fa; --border: #d0d7de; --success: #2da44e; }
+        body { font-family: -apple-system, sans-serif; background: var(--bg); padding: 20px; display: flex; justify-content: center; }
+        .container { background: white; border: 1px solid var(--border); border-radius: 8px; padding: 24px; width: 100%; max-width: 500px; box-shadow: 0 4px 12px rgba(0,0,0,0.05); }
+        h1 { font-size: 22px; margin-bottom: 20px; text-align: center; color: #1b1f23; }
+        .grid { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; margin-bottom: 15px; }
+        label { display: block; font-size: 13px; font-weight: 600; margin-bottom: 4px; color: #24292f; }
+        input, select { width: 100%; padding: 10px; border: 1px solid var(--border); border-radius: 6px; box-sizing: border-box; font-size: 14px; margin-bottom: 10px; }
+        .btn { width: 100%; padding: 12px; background: var(--success); color: white; border: none; border-radius: 6px; font-weight: 600; cursor: pointer; font-size: 15px; }
+        .btn:hover { background: #2c974b; }
+        #result { margin-top: 20px; padding: 15px; border-radius: 6px; display: none; text-align: center; font-weight: bold; border: 1px solid #4ac26b; background: #dafbe1; }
+        .note { font-size: 12px; color: #57606a; background: #fff8c5; padding: 10px; border-radius: 6px; margin-bottom: 20px; border: 1px solid #d4a72c; }
+    </style>
+</head>
+<body>
+
+<div class="container">
+    <h1>Physics 212 Grade Tracker</h1>
     
-    let html = '';
-    if (sub.mode === 'phys212') {
-        html = `
-            <p style="font-size:12px; color:#666;">Enter total points <b>after drops</b>. (Check your course gradebook for these totals).</p>
-            <div class="grid">
-                <div><label>Prelectures (Max 25)</label><input type="number" oninput="update('pl', this.value)" value="${sub.data.pl||''}"></div>
-                <div><label>Checkpoints (Max 25)</label><input type="number" oninput="update('cp', this.value)" value="${sub.data.cp||''}"></div>
-                <div><label>iClicker (Max 25)</label><input type="number" oninput="update('ic', this.value)" value="${sub.data.ic||''}"></div>
-                <div><label>Homework (Max 140)</label><input type="number" oninput="update('hw', this.value)" value="${sub.data.hw||''}"></div>
-                <div><label>Disc. Quizzes (Max 140)</label><input type="number" oninput="update('disc', this.value)" value="${sub.data.disc||''}"></div>
-                <div><label>Prelabs (Max 30)</label><input type="number" oninput="update('prel', this.value)" value="${sub.data.prel||''}"></div>
-                <div><label>Labs (Max 100)</label><input type="number" oninput="update('lab', this.value)" value="${sub.data.lab||''}"></div>
-                <div><label>Lab Practical (Max 15)</label><input type="number" oninput="update('prac', this.value)" value="${sub.data.prac||''}"></div>
-                <div class="full"><label>Bonus Points (Max 25)</label><input type="number" oninput="update('bonus', this.value)" value="${sub.data.bonus||''}"></div>
-            </div>
-            <label>Hour Exams (Sum of 3, Max 300)</label>
-            <input type="number" placeholder="Exam 1 + 2 + 3" oninput="update('exams', this.value)" value="${sub.data.exams||''}">
-        `;
-        document.getElementById('targetGrade').innerHTML = `
-            <option value="950">A+ (950 pts)</option>
-            <option value="920">A (920 pts)</option>
-            <option value="900">A- (900 pts)</option>
-            <option value="880">B+ (880 pts)</option>
-            <option value="860">B (860 pts)</option>
-            <option value="780">C (780 pts)</option>
-        `;
-    } 
-    // ... (rest of your loadSubject logic for Python/Normal)
-    document.getElementById('inputFields').innerHTML = html;
-}
+    <div class="note">
+        <strong>UIUC Drop Policy:</strong> This calculator assumes you are entering totals <em>after</em> your lowest scores are dropped[cite: 14, 18].
+    </div>
 
-function calculate() {
-    const sub = subjects[activeSub];
-    const target = parseFloat(document.getElementById('targetGrade').value);
-    let resultText = "";
+    <div class="grid">
+        <div>
+            <label>Prelectures (Max 25)</label>
+            <input type="number" id="pl" placeholder="0-25">
+        </div>
+        <div>
+            <label>Checkpoints (Max 25)</label>
+            <input type="number" id="cp" placeholder="0-25">
+        </div>
+        <div>
+            <label>iClicker (Max 25)</label>
+            <input type="number" id="ic" placeholder="0-25">
+        </div>
+        <div>
+            <label>Homework (Max 140)</label>
+            <input type="number" id="hw" placeholder="0-140">
+        </div>
+        <div>
+            <label>Disc. Quizzes (Max 140)</label>
+            <input type="number" id="disc" placeholder="0-140">
+        </div>
+        <div>
+            <label>Prelabs (Max 30)</label>
+            <input type="number" id="prel" placeholder="0-30">
+        </div>
+        <div>
+            <label>Labs (Max 100)</label>
+            <input type="number" id="lab" placeholder="0-100">
+        </div>
+        <div>
+            <label>Lab Practical (Max 15)</label>
+            <input type="number" id="prac" placeholder="0-15">
+        </div>
+    </div>
 
-    if (sub.mode === 'phys212') {
-        const d = sub.data;
-        // The drops are already handled by your course gradebook, 
-        // so we sum the categories as they appear there.
-        const currentPoints = (d.pl||0) + (d.cp||0) + (d.ic||0) + (d.hw||0) + 
-                              (d.disc||0) + (d.prel||0) + (d.lab||0) + 
-                              (d.prac||0) + (d.bonus||0) + (d.exams||0);
+    <label>Hour Exams Sum (Max 300)</label>
+    <input type="number" id="exams" placeholder="Exam 1 + 2 + 3">
+
+    <label>Bonus Points (Max 25)</label>
+    <input type="number" id="bonus" placeholder="0-25">
+
+    <label>Target Letter Grade</label>
+    <select id="target">
+        <option value="950">A+ (950 pts)</option>
+        <option value="920">A (920 pts)</option>
+        <option value="900">A- (900 pts)</option>
+        <option value="880">B+ (880 pts)</option>
+        <option value="860">B (860 pts)</option>
+        <option value="835">B- (835 pts)</option>
+        <option value="810">C+ (810 pts)</option>
+        <option value="780">C (780 pts)</option>
+    </select>
+
+    <button class="btn" onclick="calculate()">Calculate Points Needed</button>
+
+    <div id="result"></div>
+</div>
+
+<script>
+    function calculate() {
+        // Gathering all inputs
+        const pl = parseFloat(document.getElementById('pl').value) || 0;
+        const cp = parseFloat(document.getElementById('cp').value) || 0;
+        const ic = parseFloat(document.getElementById('ic').value) || 0;
+        const hw = parseFloat(document.getElementById('hw').value) || 0;
+        const disc = parseFloat(document.getElementById('disc').value) || 0;
+        const prel = parseFloat(document.getElementById('prel').value) || 0;
+        const lab = parseFloat(document.getElementById('lab').value) || 0;
+        const prac = parseFloat(document.getElementById('prac').value) || 0;
+        const exams = parseFloat(document.getElementById('exams').value) || 0;
+        const bonus = parseFloat(document.getElementById('bonus').value) || 0;
+        const target = parseFloat(document.getElementById('target').value);
+
+        // Sum current points (Total max possible is 1000 + 25 bonus) [cite: 12, 25]
+        const currentTotal = pl + cp + ic + hw + disc + prel + lab + prac + exams + bonus;
         
-        const pointsNeededOnFinal = target - currentPoints;
-        const percentageNeeded = (pointsNeededOnFinal / 200) * 100;
+        // Final Exam is worth 200 points [cite: 24]
+        const pointsNeeded = target - currentTotal;
+        const percentageNeeded = (pointsNeeded / 200) * 100;
 
-        if (pointsNeededOnFinal <= 0) {
-            resultText = "🎉 You've already reached your goal points!";
-        } else if (pointsNeededOnFinal > 200) {
-            resultText = `⚠️ You need ${pointsNeededOnFinal.toFixed(1)} points, which is more than the 200 available.`;
+        const resDiv = document.getElementById('result');
+        resDiv.style.display = 'block';
+
+        if (pointsNeeded <= 0) {
+            resDiv.innerHTML = "🎉 Goal reached! You don't need any points on the final.";
+            resDiv.style.background = "#dafbe1";
+        } else if (pointsNeeded > 200) {
+            resDiv.innerHTML = `⚠️ This grade is out of reach. You need ${pointsNeeded.toFixed(1)} points, but the final is only out of 200.`;
+            resDiv.style.background = "#fff8c5";
         } else {
-            resultText = `You need <strong>${pointsNeededOnFinal.toFixed(1)}/200</strong> on the final (${percentageNeeded.toFixed(1)}%).`;
+            resDiv.innerHTML = `You need <strong>${pointsNeeded.toFixed(1)}/200</strong> on the final (${percentageNeeded.toFixed(1)}%).`;
+            resDiv.style.background = "#dafbe1";
         }
     }
-    // ... (rest of your calculate logic)
-    const res = document.getElementById('result');
-    res.style.display = 'block';
-    res.innerHTML = resultText;
-}
+</script>
+
+</body>
+</html>
