@@ -3,113 +3,157 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Smart Grade Calculator</title>
+    <title>All-in-One Grade Tracker</title>
     <style>
-        :root { --primary: #2da44e; --bg: #f6f8fa; --text: #24292f; }
-        body { font-family: -apple-system, sans-serif; background-color: var(--bg); color: var(--text); display: flex; justify-content: center; padding: 20px; }
-        .container { background: white; border: 1px solid #d0d7de; border-radius: 8px; padding: 24px; width: 100%; max-width: 450px; box-shadow: 0 8px 24px rgba(0,0,0,0.1); }
-        h2 { text-align: center; margin-top: 0; color: #1b1f23; }
-        p.note { font-size: 12px; color: #57606a; text-align: center; margin-bottom: 20px; }
-        .grid { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; }
-        .full { grid-column: span 2; }
-        label { display: block; font-weight: 600; font-size: 13px; margin-bottom: 4px; color: #24292f; }
-        input { width: 100%; padding: 10px; border: 1px solid #d0d7de; border-radius: 6px; box-sizing: border-box; font-size: 15px; }
-        button { width: 100%; background-color: var(--primary); color: white; border: none; border-radius: 6px; padding: 14px; font-weight: 600; font-size: 16px; cursor: pointer; margin-top: 20px; }
-        button:hover { background-color: #2c974b; }
-        #result { margin-top: 20px; padding: 15px; border-radius: 6px; display: none; text-align: center; border: 1px solid transparent; }
-        .success { background-color: #dafbe1; border-color: #4ac26b; }
-        .warning { background-color: #fff8c5; border-color: #d4a72c; }
-        hr { border: 0; border-top: 1px solid #d0d7de; margin: 20px 0; }
-        .mid-grid { display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 8px; }
+        :root { --primary: #0969da; --bg: #f6f8fa; --border: #d0d7de; --success: #2da44e; }
+        body { font-family: -apple-system, sans-serif; background: var(--bg); padding: 20px; display: flex; justify-content: center; }
+        .container { background: white; border: 1px solid var(--border); border-radius: 8px; padding: 24px; width: 100%; max-width: 500px; box-shadow: 0 4px 12px rgba(0,0,0,0.05); }
+        h1 { font-size: 22px; margin-bottom: 20px; text-align: center; color: #1b1f23; }
+        .tab-buttons { display: flex; gap: 8px; margin-bottom: 20px; overflow-x: auto; padding: 5px 0; border-bottom: 1px solid var(--border); }
+        .tab-btn { padding: 8px 16px; border: 1px solid var(--border); border-radius: 6px 6px 0 0; background: #f6f8fa; cursor: pointer; white-space: nowrap; font-weight: 500; }
+        .tab-btn.active { background: white; border-bottom-color: white; color: var(--primary); margin-bottom: -1px; }
+        .setup-box { background: #f0f7ff; border: 1px dashed var(--primary); padding: 15px; border-radius: 8px; margin-bottom: 20px; }
+        label { display: block; font-size: 13px; font-weight: 600; margin-bottom: 4px; margin-top: 10px; }
+        input, select { width: 100%; padding: 10px; border: 1px solid var(--border); border-radius: 6px; box-sizing: border-box; font-size: 14px; margin-bottom: 10px; }
+        .btn { width: 100%; padding: 12px; border: none; border-radius: 6px; font-weight: 600; cursor: pointer; font-size: 15px; }
+        .btn-add { background: var(--primary); color: white; }
+        .btn-calc { background: var(--success); color: white; margin-top: 15px; }
+        .btn-del { background: #cf222e; color: white; margin-top: 10px; padding: 8px; font-size: 13px; }
+        #result { margin-top: 20px; padding: 15px; border-radius: 6px; display: none; text-align: center; font-weight: bold; border: 1px solid #4ac26b; background: #dafbe1; }
+        .mid-grid { display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 10px; }
     </style>
 </head>
 <body>
 
 <div class="container">
-    <h2>Grade Calculator</h2>
-    <p class="note">Final (18%) replaces lowest Midterm (16%) ONLY if Final is higher.</p>
-    
-    <div class="grid">
-        <div><label>Syl. Quiz (2%)</label><input type="number" id="sylQuiz"></div>
-        <div><label>Attendance (3%)</label><input type="number" id="attend"></div>
-        <div><label>Lab Att. (10%)</label><input type="number" id="labAtt"></div>
-        <div><label>Nonlab HW (8%)</label><input type="number" id="nlHW"></div>
-        <div><label>Lab HW (5%)</label><input type="number" id="labHW"></div>
-        <div><label>Py Quizzes (6%)</label><input type="number" id="pyQuiz"></div>
-        
-        <div class="full"><hr></div>
-        
-        <div class="full">
-            <label>Midterm Scores (16% each)</label>
-            <div class="mid-grid">
-                <input type="number" id="m1" placeholder="M1">
-                <input type="number" id="m2" placeholder="M2">
-                <input type="number" id="m3" placeholder="M3">
-            </div>
-        </div>
+    <h1>My Grade Hub</h1>
 
-        <div class="full">
-            <label>Target Class Grade (%)</label>
-            <input type="number" id="target" placeholder="e.g. 90">
-        </div>
+    <div class="setup-box">
+        <label>Subject Name</label>
+        <input type="text" id="newSubName" placeholder="e.g. Psychology 101">
+        <label>Grading Type</label>
+        <select id="newSubMode">
+            <option value="python">Python Class (Midterm Replacement)</option>
+            <option value="normal">Normal Class (Weighted Average)</option>
+        </select>
+        <button class="btn btn-add" onclick="addSubject()">+ Add Subject</button>
     </div>
 
-    <button onclick="calculate()">Calculate Required Score</button>
-    <div id="result"></div>
+    <div id="subjectTabs" class="tab-buttons"></div>
+
+    <div id="calcArea" style="display:none;">
+        <h2 id="currentSubTitle" style="margin-bottom:5px;"></h2>
+        <p id="modeDesc" style="font-size:12px; color:#666; margin-bottom:15px;"></p>
+        
+        <div id="inputFields"></div>
+
+        <label>Target Grade</label>
+        <select id="targetGrade">
+            <option value="90">A (90%)</option>
+            <option value="80">B (80%)</option>
+            <option value="70">C (70%)</option>
+        </select>
+
+        <button class="btn btn-calc" onclick="calculate()">Calculate Needed Final Score</button>
+        <button class="btn btn-del" onclick="deleteSubject()">Remove Subject</button>
+        <div id="result"></div>
+    </div>
 </div>
 
 <script>
-    function calculate() {
-        const sQ = parseFloat(document.getElementById('sylQuiz').value) || 0;
-        const att = parseFloat(document.getElementById('attend').value) || 0;
-        const lA = parseFloat(document.getElementById('labAtt').value) || 0;
-        const nHW = parseFloat(document.getElementById('nlHW').value) || 0;
-        const lHW = parseFloat(document.getElementById('labHW').value) || 0;
-        const pQ = parseFloat(document.getElementById('pyQuiz').value) || 0;
-        const m1 = parseFloat(document.getElementById('m1').value) || 0;
-        const m2 = parseFloat(document.getElementById('m2').value) || 0;
-        const m3 = parseFloat(document.getElementById('m3').value) || 0;
-        const target = parseFloat(document.getElementById('target').value);
+    let subjects = JSON.parse(localStorage.getItem('gradeData')) || {};
+    let activeSub = null;
 
-        if (isNaN(target)) { alert("Enter target grade"); return; }
+    function save() { localStorage.setItem('gradeData', JSON.stringify(subjects)); }
 
-        const wFixed = (sQ * 0.02) + (att * 0.03) + (lA * 0.10) + (nHW * 0.08) + (lHW * 0.05) + (pQ * 0.06);
-        const midterms = [m1, m2, m3].sort((a, b) => a - b); // [lowest, mid, high]
+    function addSubject() {
+        const name = document.getElementById('newSubName').value;
+        const mode = document.getElementById('newSubMode').value;
+        if (!name) return;
+        subjects[name] = { mode: mode, data: {} };
+        save();
+        document.getElementById('newSubName').value = '';
+        renderTabs();
+    }
+
+    function renderTabs() {
+        const tabs = document.getElementById('subjectTabs');
+        tabs.innerHTML = '';
+        Object.keys(subjects).forEach(name => {
+            const b = document.createElement('button');
+            b.className = `tab-btn ${activeSub === name ? 'active' : ''}`;
+            b.innerText = name;
+            b.onclick = () => loadSubject(name);
+            tabs.appendChild(b);
+        });
+    }
+
+    function loadSubject(name) {
+        activeSub = name;
+        renderTabs();
+        const sub = subjects[name];
+        document.getElementById('calcArea').style.display = 'block';
+        document.getElementById('currentSubTitle').innerText = name;
+        document.getElementById('modeDesc').innerText = sub.mode === 'python' ? 'Rule: Final replaces lowest Midterm (16% each).' : 'Rule: Standard weighted average.';
         
-        // Scenario 1: Final is HIGHER than lowest midterm (Replacement happens)
-        // Target = wFixed + (M_mid * 0.16) + (M_high * 0.16) + [Final * (0.18 + 0.16)]
-        const neededWithReplace = (target - wFixed - (midterms[1] * 0.16) - (midterms[2] * 0.16)) / 0.34;
-
-        // Scenario 2: Final is LOWER than lowest midterm (No replacement)
-        // Target = wFixed + (M1 * 0.16) + (M2 * 0.16) + (M3 * 0.16) + (Final * 0.18)
-        const neededNoReplace = (target - wFixed - (m1 * 0.16) - (m2 * 0.16) - (m3 * 0.16)) / 0.18;
-
-        // The logic: If you need a replacement to hit the target, use that number.
-        // If your midterms are already so high that the final doesn't NEED to replace one, 
-        // the required score will be lower.
-        let finalScoreNeeded;
-        if (neededWithReplace <= midterms[0]) {
-            // If the score you need is actually lower than your lowest midterm, 
-            // then replacement doesn't trigger/isn't needed.
-            finalScoreNeeded = neededNoReplace;
+        let html = '';
+        if (sub.mode === 'python') {
+            html = `
+                <div style="display:grid; grid-template-columns:1fr 1fr; gap:10px;">
+                    <div><label>Syllabus Quiz (2%)</label><input type="number" oninput="update('sq', this.value)" value="${sub.data.sq||''}"></div>
+                    <div><label>Attendance (3%)</label><input type="number" oninput="update('att', this.value)" value="${sub.data.att||''}"></div>
+                    <div><label>Lab Att. (10%)</label><input type="number" oninput="update('la', this.value)" value="${sub.data.la||''}"></div>
+                    <div><label>Nonlab HW (8%)</label><input type="number" oninput="update('nhw', this.value)" value="${sub.data.nhw||''}"></div>
+                    <div><label>Lab HW (5%)</label><input type="number" oninput="update('lhw', this.value)" value="${sub.data.lhw||''}"></div>
+                    <div><label>Py Quizzes (6%)</label><input type="number" oninput="update('pq', this.value)" value="${sub.data.pq||''}"></div>
+                </div>
+                <label>Midterms (16% each)</label>
+                <div class="mid-grid">
+                    <input type="number" placeholder="M1" oninput="update('m1', this.value)" value="${sub.data.m1||''}">
+                    <input type="number" placeholder="M2" oninput="update('m2', this.value)" value="${sub.data.m2||''}">
+                    <input type="number" placeholder="M3" oninput="update('m3', this.value)" value="${sub.data.m3||''}">
+                </div>
+            `;
         } else {
-            finalScoreNeeded = neededWithReplace;
+            html = `
+                <label>Your Current Grade (%)</label>
+                <input type="number" id="curGrade" oninput="update('cur', this.value)" value="${sub.data.cur||''}">
+                <label>Weight of Final Exam (%)</label>
+                <input type="number" id="fWeight" oninput="update('fw', this.value)" value="${sub.data.fw||''}">
+            `;
+        }
+        document.getElementById('inputFields').innerHTML = html;
+        document.getElementById('result').style.display = 'none';
+    }
+
+    function update(key, val) { subjects[activeSub].data[key] = parseFloat(val); save(); }
+
+    function deleteSubject() { delete subjects[activeSub]; activeSub = null; save(); renderTabs(); document.getElementById('calcArea').style.display = 'none'; }
+
+    function calculate() {
+        const sub = subjects[activeSub];
+        const target = parseFloat(document.getElementById('targetGrade').value);
+        let needed = 0;
+
+        if (sub.mode === 'python') {
+            const d = sub.data;
+            const wFixed = (d.sq*0.02||0) + (d.att*0.03||0) + (d.la*0.10||0) + (d.nhw*0.08||0) + (d.lhw*0.05||0) + (d.pq*0.06||0);
+            const mids = [d.m1||0, d.m2||0, d.m3||0].sort((a,b)=>a-b);
+            const replaceNeeded = (target - wFixed - (mids[1]*0.16) - (mids[2]*0.16)) / 0.34;
+            const normalNeeded = (target - wFixed - (mids[0]*0.16) - (mids[1]*0.16) - (mids[2]*0.16)) / 0.18;
+            needed = replaceNeeded <= mids[0] ? normalNeeded : replaceNeeded;
+        } else {
+            const cur = sub.data.cur || 0;
+            const fw = (sub.data.fw || 0) / 100;
+            needed = (target - (cur * (1 - fw))) / fw;
         }
 
         const res = document.getElementById('result');
         res.style.display = 'block';
-        res.className = finalScoreNeeded > 100 ? 'warning' : 'success';
-        
-        if (finalScoreNeeded <= 0) {
-            res.innerHTML = "🎉 You've hit your goal! You can get a 0% on the final.";
-        } else {
-            const replaceText = finalScoreNeeded > midterms[0] ? 
-                `<br><small>(This replaces your ${midterms[0]}% midterm)</small>` : 
-                `<br><small>(Final is lower than midterms; no replacement triggered)</small>`;
-            res.innerHTML = `Required Final Score: <strong>${finalScoreNeeded.toFixed(2)}%</strong> ${replaceText}`;
-        }
+        res.innerHTML = `You need a <strong>${needed.toFixed(2)}%</strong> on the final.`;
     }
-</script>
 
+    renderTabs();
+</script>
 </body>
 </html>
