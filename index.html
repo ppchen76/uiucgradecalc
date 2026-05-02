@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>My Grade Hub</title>
+    <title>Grade Hub</title>
     <style>
         :root { --primary: #0969da; --bg: #f6f8fa; --border: #d0d7de; --success: #2da44e; }
         body { font-family: -apple-system, sans-serif; background: var(--bg); padding: 20px; display: flex; justify-content: center; }
@@ -31,11 +31,11 @@
 
     <div class="setup-box">
         <label>Subject Name</label>
-        <input type="text" id="newName" placeholder="e.g. Physics 212">
+        <input type="text" id="newName" placeholder="e.g. Linear Algebra">
         <label>Class Type</label>
         <select id="newType">
+            <option value="python">Linear Algebra (Final Replaces Midterm)</option>
             <option value="phys212">Physics 212 (UIUC Points)</option>
-            <option value="python">Linear Algebra (Midterm Replacement)</option>
             <option value="normal">Standard Class (Weighted %)</option>
         </select>
         <button class="btn btn-add" onclick="addSubject()">+ Add Subject</button>
@@ -94,6 +94,16 @@
         let html = '';
         let targetHtml = '';
 
+        const standardScale = `
+            <option value="97">A+ (97%)</option>
+            <option value="93">A (93%)</option>
+            <option value="90">A- (90%)</option>
+            <option value="87">B+ (87%)</option>
+            <option value="83">B (83%)</option>
+            <option value="80">B- (80%)</option>
+            <option value="70">C (70%)</option>
+        `;
+
         if(sub.type === 'python') {
             html = `<div class="grid">
                 <div><label>Syl. Quiz (2%)</label><input type="number" oninput="up('sq',this.value)" value="${sub.scores.sq||''}"></div>
@@ -106,9 +116,9 @@
                 <div><label>Midterm 2 (16%)</label><input type="number" oninput="up('m2',this.value)" value="${sub.scores.m2||''}"></div>
                 <div class="full"><label>Midterm 3 (16%)</label><input type="number" oninput="up('m3',this.value)" value="${sub.scores.m3||''}"></div>
             </div>`;
-            targetHtml = `<option value="90">A (90%)</option><option value="80">B (80%)</option><option value="70">C (70%)</option>`;
+            targetHtml = standardScale;
         } else if(sub.type === 'phys212') {
-            html = `<p style="font-size:11px; color:#666; margin-bottom:10px;">Enter points earned <b>after drops</b> per category.</p>
+            html = `<p style="font-size:11px; color:#666; margin-bottom:10px;">Enter points earned <b>after drops</b>.</p>
             <div class="grid">
                 <div><label>Prelec (Max 25)</label><input type="number" oninput="up('pl',this.value)" value="${sub.scores.pl||''}"></div>
                 <div><label>Checkpt (Max 25)</label><input type="number" oninput="up('cp',this.value)" value="${sub.scores.cp||''}"></div>
@@ -132,7 +142,7 @@
         } else {
             html = `<label>Current Class Percentage (%)</label><input type="number" oninput="up('cur',this.value)" value="${sub.scores.cur||''}">
                     <label>Weight of Final Exam (%)</label><input type="number" oninput="up('fw',this.value)" value="${sub.scores.fw||''}">`;
-            targetHtml = `<option value="90">A (90%)</option><option value="80">B (80%)</option><option value="70">C (70%)</option>`;
+            targetHtml = standardScale;
         }
         document.getElementById('inputs').innerHTML = html;
         document.getElementById('target').innerHTML = targetHtml;
@@ -142,10 +152,8 @@
 
     function deleteSubject() {
         if(confirm("Delete " + current + "?")) {
-            delete subjects[current];
-            current = null;
-            save();
-            renderTabs();
+            delete subjects[current]; current = null;
+            save(); renderTabs();
             document.getElementById('calcArea').style.display = 'none';
         }
     }
@@ -154,7 +162,6 @@
         const s = subjects[current];
         const t = parseFloat(document.getElementById('target').value);
         let res = 0;
-        let finalWeight = 0;
 
         if(s.type === 'python') {
             const d = s.scores;
@@ -166,8 +173,7 @@
         } else if(s.type === 'phys212') {
             const d = s.scores;
             const curr = (d.pl||0)+(d.cp||0)+(d.ic||0)+(d.hw||0)+(d.dq||0)+(d.pr||0)+(d.lb||0)+(d.pc||0)+(d.ex||0)+(d.bn||0);
-            const ptsNeeded = t - curr;
-            res = (ptsNeeded / 200) * 100;
+            res = ((t - curr) / 200) * 100;
         } else {
             const c = s.scores.cur||0; const w = (s.scores.fw||0)/100;
             res = (t - (c * (1-w))) / w;
@@ -175,14 +181,8 @@
         
         const div = document.getElementById('result');
         div.style.display = 'block';
-        if (res > 100) {
-            div.style.background = "#fff8c5";
-            div.style.borderColor = "#d4a72c";
-        } else {
-            div.style.background = "#dafbe1";
-            div.style.borderColor = "#4ac26b";
-        }
-        div.innerHTML = `You need a <strong>${res.toFixed(2)}%</strong> on the final exam to reach your goal.`;
+        div.style.background = res > 100 ? "#fff8c5" : "#dafbe1";
+        div.innerHTML = `You need a <strong>${res.toFixed(2)}%</strong> on the final exam.`;
     }
     renderTabs();
 </script>
