@@ -35,7 +35,7 @@
         <input type="text" id="newName" placeholder="e.g. STAT 100">
         <label>Class Type</label>
         <select id="newType">
-            <option value="stat">STAT (HW Drops & PA Deciles)</option>
+            <option value="stat">STAT (Drops, Deciles & replacement)</option>
             <option value="phys225">Physics 225 (UIUC Points)</option>
             <option value="phys212">Physics 212 (UIUC Points)</option>
             <option value="normal">Standard Class (Weighted %)</option>
@@ -101,13 +101,13 @@
         if(sub.type === 'stat') {
             html = `<div class="grid">
                 <div class="full"><label>Discussions Attended (0-14)</label><input type="number" oninput="up('discAtt',this.value)" value="${sub.scores.discAtt||''}"></div>
-                <div class="full note">10+ discussions = Full DiscPA credit + 2nd HW drop.</div>
+                <div class="full note">10+ discussions = DiscPA credit + 2nd HW drop.</div>
                 <div><label>Avg HW % (After Drops)</label><input type="number" oninput="up('hw',this.value)" value="${sub.scores.hw||''}"></div>
-                <div><label>Canvas PA Points (Max ~80)</label><input type="number" oninput="up('cpa',this.value)" value="${sub.scores.cpa||''}"></div>
-                <div><label>Disc PA Points (Max 30)</label><input type="number" oninput="up('dpa',this.value)" value="${sub.scores.dpa||''}"></div>
-                <div><label>Midterm 1 (15%)</label><input type="number" oninput="up('m1',this.value)" value="${sub.scores.m1||''}"></div>
-                <div><label>Midterm 2 (15%)</label><input type="number" oninput="up('m2',this.value)" value="${sub.scores.m2||''}"></div>
-                <div class="full"><label>Midterm 3 (15%)</label><input type="number" oninput="up('m3',this.value)" value="${sub.scores.m3||''}"></div>
+                <div><label>Canvas PA Pts (Max 80)</label><input type="number" oninput="up('cpa',this.value)" value="${sub.scores.cpa||''}"></div>
+                <div><label>Disc PA Pts (Max 30)</label><input type="number" oninput="up('dpa',this.value)" value="${sub.scores.dpa||''}"></div>
+                <div><label>Midterm 1 %</label><input type="number" oninput="up('m1',this.value)" value="${sub.scores.m1||''}"></div>
+                <div><label>Midterm 2 %</label><input type="number" oninput="up('m2',this.value)" value="${sub.scores.m2||''}"></div>
+                <div class="full"><label>Midterm 3 %</label><input type="number" oninput="up('m3',this.value)" value="${sub.scores.m3||''}"></div>
             </div>`;
             targetHtml = standardScale;
         } else if(sub.type === 'phys225') {
@@ -155,16 +155,12 @@
 
         if(s.type === 'stat') {
             const d = s.scores;
-            // PA Logic
             let discPoints = (d.discAtt >= 10) ? (d.dpa || 0) : 0;
             let totalPA = (d.cpa || 0) + discPoints;
             let paProp = totalPA / 110;
             let finalPA = (paProp > 1.0) ? paProp : Math.ceil(paProp * 10) / 10;
-            
             const fixed = (finalPA * 5) + ((d.hw || 0) * 0.30);
             const ms = [d.m1||0, d.m2||0, d.m3||0].sort((a,b)=>a-b);
-            
-            // Replacement: Final (20%) replaces lowest Midterm (15%)
             const rep = (t - fixed - (ms[1]*0.15) - (ms[2]*0.15)) / 0.35;
             const nor = (t - fixed - (ms[0]*0.15) - (ms[1]*0.15) - (ms[2]*0.15)) / 0.20;
             res = rep <= ms[0] ? nor : rep;
