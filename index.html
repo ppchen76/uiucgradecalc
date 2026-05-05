@@ -22,6 +22,7 @@
         #result { margin-top: 20px; padding: 15px; border-radius: 6px; display: none; text-align: center; font-weight: bold; border: 1px solid #4ac26b; background: #dafbe1; line-height: 1.5; }
         .grid { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; }
         .full { grid-column: span 2; }
+        .note { font-size: 11px; color: #666; margin-bottom: 10px; background: #fff8c5; padding: 5px; border-radius: 4px; }
     </style>
 </head>
 <body>
@@ -31,12 +32,14 @@
 
     <div class="setup-box">
         <label>Subject Name</label>
-        <input type="text" id="newName" placeholder="e.g. Linear Algebra">
+        <input type="text" id="newName" placeholder="e.g. Physics 225">
         <label>Class Type</label>
         <select id="newType">
-            <option value="python">Linear Algebra (Final Replaces Midterm)</option>
+            <option value="phys225">Physics 225 (UIUC Points)</option>
             <option value="phys212">Physics 212 (UIUC Points)</option>
+            <option value="python">Linear Algebra (Midterm Replacement)</option>
             <option value="normal">Standard Class (Weighted %)</option>
+            <option value="custom">Custom Weighted Categories</option>
         </select>
         <button class="btn btn-add" onclick="addSubject()">+ Add Subject</button>
     </div>
@@ -59,6 +62,8 @@
 <script>
     let subjects = JSON.parse(localStorage.getItem('hubData')) || {};
     let current = null;
+
+    const standardScale = `<option value="97">A+ (97%)</option><option value="93">A (93%)</option><option value="90">A- (90%)</option><option value="87">B+ (87%)</option><option value="83">B (83%)</option><option value="80">B- (80%)</option><option value="70">C (70%)</option>`;
 
     function save() { localStorage.setItem('hubData', JSON.stringify(subjects)); }
 
@@ -94,31 +99,18 @@
         let html = '';
         let targetHtml = '';
 
-        const standardScale = `
-            <option value="97">A+ (97%)</option>
-            <option value="93">A (93%)</option>
-            <option value="90">A- (90%)</option>
-            <option value="87">B+ (87%)</option>
-            <option value="83">B (83%)</option>
-            <option value="80">B- (80%)</option>
-            <option value="70">C (70%)</option>
-        `;
-
-        if(sub.type === 'python') {
-            html = `<div class="grid">
-                <div><label>Syl. Quiz (2%)</label><input type="number" oninput="up('sq',this.value)" value="${sub.scores.sq||''}"></div>
-                <div><label>Attend (3%)</label><input type="number" oninput="up('at',this.value)" value="${sub.scores.at||''}"></div>
-                <div><label>Lab Att (10%)</label><input type="number" oninput="up('la',this.value)" value="${sub.scores.la||''}"></div>
-                <div><label>Nonlab HW (8%)</label><input type="number" oninput="up('nh',this.value)" value="${sub.scores.nh||''}"></div>
-                <div><label>Lab HW (5%)</label><input type="number" oninput="up('lh',this.value)" value="${sub.scores.lh||''}"></div>
-                <div><label>Quizzes (6%)</label><input type="number" oninput="up('pq',this.value)" value="${sub.scores.pq||''}"></div>
-                <div><label>Midterm 1 (16%)</label><input type="number" oninput="up('m1',this.value)" value="${sub.scores.m1||''}"></div>
-                <div><label>Midterm 2 (16%)</label><input type="number" oninput="up('m2',this.value)" value="${sub.scores.m2||''}"></div>
-                <div class="full"><label>Midterm 3 (16%)</label><input type="number" oninput="up('m3',this.value)" value="${sub.scores.m3||''}"></div>
+        if(sub.type === 'phys225') {
+            html = `<p class="note">Enter points earned after drops. (Total Max: 1000)</p>
+            <div class="grid">
+                <div><label>Lectures (Max 200)</label><input type="number" oninput="up('lec',this.value)" value="${sub.scores.lec||''}"></div>
+                <div><label>Homework (Max 200)</label><input type="number" oninput="up('hw',this.value)" value="${sub.scores.hw||''}"></div>
+                <div><label>Discussion (Max 100)</label><input type="number" oninput="up('disc',this.value)" value="${sub.scores.disc||''}"></div>
+                <div><label>Midterm (Max 225)</label><input type="number" oninput="up('mid',this.value)" value="${sub.scores.mid||''}"></div>
+                <div class="full"><label>Bonus Points (Max 22)</label><input type="number" oninput="up('bn',this.value)" value="${sub.scores.bn||''}"></div>
             </div>`;
-            targetHtml = standardScale;
+            targetHtml = `<option value="970">A+ (970)</option><option value="930">A (930)</option><option value="900">A- (900)</option><option value="870">B+ (870)</option><option value="830">B (830)</option><option value="800">B- (800)</option><option value="770">C+ (770)</option><option value="730">C (730)</option><option value="700">C- (700)</option><option value="600">D- (600)</option>`;
         } else if(sub.type === 'phys212') {
-            html = `<p style="font-size:11px; color:#666; margin-bottom:10px;">Enter points earned <b>after drops</b>.</p>
+            html = `<p class="note">Enter points earned after drops. (Total Max: 1000)</p>
             <div class="grid">
                 <div><label>Prelec (Max 25)</label><input type="number" oninput="up('pl',this.value)" value="${sub.scores.pl||''}"></div>
                 <div><label>Checkpt (Max 25)</label><input type="number" oninput="up('cp',this.value)" value="${sub.scores.cp||''}"></div>
@@ -131,49 +123,74 @@
                 <div><label>3 Exams (Max 300)</label><input type="number" oninput="up('ex',this.value)" value="${sub.scores.ex||''}"></div>
                 <div><label>Bonus (Max 25)</label><input type="number" oninput="up('bn',this.value)" value="${sub.scores.bn||''}"></div>
             </div>`;
-            targetHtml = `
-                <option value="950">A+ (950 pts)</option><option value="920">A (920 pts)</option>
-                <option value="900">A- (900 pts)</option><option value="880">B+ (880 pts)</option>
-                <option value="860">B (860 pts)</option><option value="835">B- (835 pts)</option>
-                <option value="810">C+ (810 pts)</option><option value="780">C (780 pts)</option>
-                <option value="750">C- (750 pts)</option><option value="720">D+ (720 pts)</option>
-                <option value="690">D (690 pts)</option><option value="610">D- (610 pts)</option>
-            `;
+            targetHtml = `<option value="950">A+ (950)</option><option value="920">A (920)</option><option value="900">A- (900)</option><option value="880">B+ (880)</option><option value="860">B (860)</option><option value="835">B- (835)</option><option value="810">C+ (810)</option><option value="780">C (780)</option><option value="750">C- (750)</option><option value="610">D- (610)</option>`;
+        } else if(sub.type === 'python') {
+            html = `<div class="grid">
+                <div><label>Syl. Quiz (2%)</label><input type="number" oninput="up('sq',this.value)" value="${sub.scores.sq||''}"></div>
+                <div><label>Attend (3%)</label><input type="number" oninput="up('at',this.value)" value="${sub.scores.at||''}"></div>
+                <div><label>Lab Att (10%)</label><input type="number" oninput="up('la',this.value)" value="${sub.scores.la||''}"></div>
+                <div><label>Nonlab HW (8%)</label><input type="number" oninput="up('nh',this.value)" value="${sub.scores.nh||''}"></div>
+                <div><label>Lab HW (5%)</label><input type="number" oninput="up('lh',this.value)" value="${sub.scores.lh||''}"></div>
+                <div><label>Quizzes (6%)</label><input type="number" oninput="up('pq',this.value)" value="${sub.scores.pq||''}"></div>
+                <div><label>Midterm 1 (16%)</label><input type="number" oninput="up('m1',this.value)" value="${sub.scores.m1||''}"></div>
+                <div><label>Midterm 2 (16%)</label><input type="number" oninput="up('m2',this.value)" value="${sub.scores.m2||''}"></div>
+                <div class="full"><label>Midterm 3 (16%)</label><input type="number" oninput="up('m3',this.value)" value="${sub.scores.m3||''}"></div>
+            </div>`;
+            targetHtml = standardScale;
+        } else if(sub.type === 'custom') {
+            html = `<p class="note">Enter Category Weight % and your Score %.</p>
+            <div class="grid" style="grid-template-columns: 1.5fr 1fr 1fr;">
+                <label>Category</label><label>Weight%</label><label>Score%</label>
+                <input type="text" oninput="up('n1',this.value)" value="${sub.scores.n1||''}" placeholder="Exams">
+                <input type="number" oninput="up('w1',this.value)" value="${sub.scores.w1||''}">
+                <input type="number" oninput="up('s1',this.value)" value="${sub.scores.s1||''}">
+                <input type="text" oninput="up('n2',this.value)" value="${sub.scores.n2||''}" placeholder="HW">
+                <input type="number" oninput="up('w2',this.value)" value="${sub.scores.w2||''}">
+                <input type="number" oninput="up('s2',this.value)" value="${sub.scores.s2||''}">
+            </div>
+            <label style="margin-top:15px;">Final Exam Weight %</label>
+            <input type="number" oninput="up('fw',this.value)" value="${sub.scores.fw||''}">`;
+            targetHtml = standardScale;
         } else {
-            html = `<label>Current Class Percentage (%)</label><input type="number" oninput="up('cur',this.value)" value="${sub.scores.cur||''}">
-                    <label>Weight of Final Exam (%)</label><input type="number" oninput="up('fw',this.value)" value="${sub.scores.fw||''}">`;
+            html = `<label>Current Percentage (%)</label><input type="number" oninput="up('cur',this.value)" value="${sub.scores.cur||''}">
+                    <label>Final Exam Weight (%)</label><input type="number" oninput="up('fw',this.value)" value="${sub.scores.fw||''}">`;
             targetHtml = standardScale;
         }
         document.getElementById('inputs').innerHTML = html;
         document.getElementById('target').innerHTML = targetHtml;
     }
 
-    function up(k, v) { subjects[current].scores[k] = parseFloat(v); save(); }
+    function up(k, v) { subjects[current].scores[k] = (isNaN(v) || v === "") ? v : parseFloat(v); save(); }
 
-    function deleteSubject() {
-        if(confirm("Delete " + current + "?")) {
-            delete subjects[current]; current = null;
-            save(); renderTabs();
-            document.getElementById('calcArea').style.display = 'none';
-        }
-    }
+    function deleteSubject() { if(confirm("Delete " + current + "?")) { delete subjects[current]; current = null; save(); renderTabs(); document.getElementById('calcArea').style.display = 'none'; } }
 
     function calculate() {
         const s = subjects[current];
         const t = parseFloat(document.getElementById('target').value);
         let res = 0;
+        let finalValue = 0;
 
-        if(s.type === 'python') {
+        if(s.type === 'phys225') {
+            const d = s.scores;
+            let nonExamBase = (d.lec||0) + (d.hw||0) + (d.disc||0);
+            let usedBonus = Math.min(d.bn||0, 500 - nonExamBase); // Bonus cannot exceed 500 total non-exam points [cite: 79]
+            let curr = nonExamBase + usedBonus + (d.mid||0);
+            res = ((t - curr) / 275) * 100; // Final is 275 pts 
+        } else if(s.type === 'phys212') {
+            const d = s.scores;
+            const curr = (d.pl||0)+(d.cp||0)+(d.ic||0)+(d.hw||0)+(d.dq||0)+(d.pr||0)+(d.lb||0)+(d.pc||0)+(d.ex||0)+(d.bn||0);
+            res = ((t - curr) / 200) * 100; // Final is 200 pts [cite: 24]
+        } else if(s.type === 'python') {
             const d = s.scores;
             const fixed = (d.sq*0.02||0)+(d.at*0.03||0)+(d.la*0.1||0)+(d.nh*0.08||0)+(d.lh*0.05||0)+(d.pq*0.06||0);
             const ms = [d.m1||0, d.m2||0, d.m3||0].sort((a,b)=>a-b);
             const rep = (t - fixed - (ms[1]*0.16) - (ms[2]*0.16)) / 0.34;
             const nor = (t - fixed - (ms[0]*0.16) - (ms[1]*0.16) - (ms[2]*0.16)) / 0.18;
             res = rep <= ms[0] ? nor : rep;
-        } else if(s.type === 'phys212') {
+        } else if(s.type === 'custom') {
             const d = s.scores;
-            const curr = (d.pl||0)+(d.cp||0)+(d.ic||0)+(d.hw||0)+(d.dq||0)+(d.pr||0)+(d.lb||0)+(d.pc||0)+(d.ex||0)+(d.bn||0);
-            res = ((t - curr) / 200) * 100;
+            const currentContribution = ((d.w1*d.s1||0) + (d.w2*d.s2||0)) / 100;
+            res = (t - currentContribution) / ((d.fw||0)/100);
         } else {
             const c = s.scores.cur||0; const w = (s.scores.fw||0)/100;
             res = (t - (c * (1-w))) / w;
@@ -182,7 +199,7 @@
         const div = document.getElementById('result');
         div.style.display = 'block';
         div.style.background = res > 100 ? "#fff8c5" : "#dafbe1";
-        div.innerHTML = `You need a <strong>${res.toFixed(2)}%</strong> on the final exam.`;
+        div.innerHTML = `Final needed: <strong>${res.toFixed(2)}%</strong>`;
     }
     renderTabs();
 </script>
