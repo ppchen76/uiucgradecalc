@@ -34,10 +34,10 @@
         <input type="text" id="newName" placeholder="e.g. PHYS 212">
         <label>Class Type</label>
         <select id="newType">
-            <option value="phys212">Physics 212 (Classic Logic)</option>
+            <option value="phys212">Physics 212 (Fixed Classic)</option>
             <option value="phys225">Physics 225 (Syllabus Logic)</option>
-            <option value="stat">STAT (PA Deciles & 2nd HW Drop)</option>
-            <option value="python">Linear Algebra (Standard Weights)</option>
+            <option value="stat">STAT (Deciles/HW Drop)</option>
+            <option value="python">Linear Algebra (Python Weights)</option>
             <option value="normal">Standard Class (Weighted %)</option>
         </select>
         <button class="btn btn-add" onclick="addSubject()">+ Add Subject</button>
@@ -110,14 +110,14 @@
                 <div><label>Lab Prac (15)</label><input type="number" oninput="up('lp',this.value)" value="${sub.scores.lp||''}"></div>
                 <div class="full"><label>Bonus (25)</label><input type="number" oninput="up('bn',this.value)" value="${sub.scores.bn||''}"></div>
             </div>`;
-            targetHtml = `<option value="95">A (950)</option><option value="92">A- (920)</option><option value="88">B+ (880)</option><option value="86">B (860)</option><option value="80">B- (800)</option>`;
+            targetHtml = `<option value="950">A (950)</option><option value="920">A- (920)</option><option value="880">B+ (880)</option><option value="860">B (860)</option><option value="800">B- (800)</option>`;
         } else if(sub.type === 'phys225') {
             html = `<div class="grid">
                 <div><label>Lectures (200)</label><input type="number" oninput="up('lec',this.value)" value="${sub.scores.lec||''}"></div>
                 <div><label>Homework (200)</label><input type="number" oninput="up('hw',this.value)" value="${sub.scores.hw||''}"></div>
                 <div><label>Discussion (100)</label><input type="number" oninput="up('disc',this.value)" value="${sub.scores.disc||''}"></div>
-                <div><label>Midterm (225)</label><input type="number" oninput="up('mid',this.value)" value="${sub.scores.mid||''}"></div>
-                <div class="full"><label>Bonus Points</label><input type="number" oninput="up('bn',this.value)" value="${sub.scores.bn||''}"></div>
+                <div class="full"><label>Midterm Exam (225)</label><input type="number" oninput="up('mid',this.value)" value="${sub.scores.mid||''}"></div>
+                <div class="full"><label>Bonus Points (Max 22)</label><input type="number" oninput="up('bn',this.value)" value="${sub.scores.bn||''}"></div>
             </div>`;
             targetHtml = `<option value="970">A+ (970)</option><option value="930">A (930)</option><option value="900">A- (900)</option><option value="870">B+ (870)</option><option value="830">B (830)</option><option value="800">B- (800)</option>`;
         } else if(sub.type === 'stat') {
@@ -162,10 +162,8 @@
 
         if(s.type === 'phys212') {
             const d = s.scores;
-            // Reverted back to the original logic you liked
-            const targetPoints = tVal * 10; 
             const ptsSoFar = (d.m1||0)+(d.m2||0)+(d.m3||0)+(d.hw||0)+(d.dq||0)+(d.lb||0)+(d.pc||0)+(d.ic||0)+(d.lp||0)+(d.bn||0);
-            res = ((targetPoints - ptsSoFar) / 200) * 100;
+            res = ((tVal - ptsSoFar) / 200) * 100;
         } else if(s.type === 'phys225') {
             const d = s.scores;
             let nonExamBase = (d.lec||0) + (d.hw||0) + (d.disc||0);
