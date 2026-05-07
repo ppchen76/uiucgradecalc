@@ -27,7 +27,7 @@
 <body>
 
 <div class="container">
-    <h1>Grade Calc</h1>
+    <h1>Grade Hub</h1>
 
     <div class="setup-box">
         <label>Subject Name</label>
@@ -114,4 +114,71 @@
                 <option value="950">A+ (950)</option>
                 <option value="920">A (920)</option>
                 <option value="900">A- (900)</option>
-                <option value="880">B+ (880
+                <option value="880">B+ (880)</option>
+                <option value="860">B (860)</option>
+                <option value="835">B- (835)</option>
+                <option value="810">C+ (810)</option>
+                <option value="780">C (780)</option>`;
+        }
+        document.getElementById('inputs').innerHTML = html;
+        document.getElementById('target').innerHTML = targetHtml;
+    }
+
+    function up(k, v) { 
+        if(!subjects[current].scores) subjects[current].scores = {};
+        subjects[current].scores[k] = parseFloat(v) || 0; 
+        save(); 
+    }
+
+    function calculate() {
+        const s = subjects[current];
+        const tVal = parseFloat(document.getElementById('target').value);
+        const div = document.getElementById('result');
+        div.style.display = 'block';
+
+        if(s.type === 'phys212') {
+            const d = s.scores;
+            
+            // 1. Calculate Midterm Exam Total (out of 300 points)
+            const examHourTotal = (d.m1||0) + (d.m2||0) + (d.m3||0);
+            
+            // 2. Calculate Non-Exam Portion (Syllabus cap is 500 total)
+            const nonExamBase = (d.hw||0)+(d.lb||0)+(d.plb||0)+(d.dq||0)+(d.pc||0)+(d.cp||0)+(d.ic||0)+(d.lp_c||0)+(d.lp_p||0);
+            
+            // Bonus points (capped at 25 individually)
+            const individualBonus = Math.min(d.bn || 0, 25);
+            
+            // CRITICAL FIX: The non-exam portion + bonus cannot exceed 500 total points
+            const totalNonExamPortion = Math.min(nonExamBase + individualBonus, 500);
+            
+            // 3. Final Calculation
+            const totalSoFar = totalNonExamPortion + examHourTotal;
+            const pointsNeeded = tVal - totalSoFar;
+            
+            // Final is worth 200 points
+            const finalScoreNeeded = (pointsNeeded / 200) * 100;
+
+            if (finalScoreNeeded > 100) {
+                div.style.background = "#fff8c5";
+                div.innerHTML = `Final Exam Needed: <strong>${finalScoreNeeded.toFixed(2)}%</strong><br><small>Goal mathematically unreachable.</small>`;
+            } else if (finalScoreNeeded <= 0) {
+                div.style.background = "#dafbe1";
+                div.innerHTML = `Goal already achieved!`;
+            } else {
+                div.style.background = "#dafbe1";
+                div.innerHTML = `Final Exam Needed: <strong>${finalScoreNeeded.toFixed(2)}%</strong>`;
+            }
+        }
+    }
+
+    function deleteSubject() { 
+        if(confirm("Delete " + current + "?")) { 
+            delete subjects[current]; 
+            current = null; save(); renderTabs(); 
+            document.getElementById('calcArea').style.display = 'none'; 
+        } 
+    }
+    renderTabs();
+</script>
+</body>
+</html>
