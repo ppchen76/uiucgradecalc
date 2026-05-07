@@ -34,7 +34,7 @@
         <input type="text" id="newName" placeholder="e.g. PHYS 212">
         <label>Class Type</label>
         <select id="newType">
-            <option value="phys212">Physics 212 (Fixed Classic)</option>
+            <option value="phys212">Physics 212 (Syllabus Corrected)</option>
             <option value="phys225">Physics 225 (Syllabus Logic)</option>
             <option value="stat">STAT (Deciles/HW Drop)</option>
             <option value="python">Linear Algebra (Python Weights)</option>
@@ -102,15 +102,18 @@
                 <div><label>Mid1 (100)</label><input type="number" oninput="up('m1',this.value)" value="${sub.scores.m1||''}"></div>
                 <div><label>Mid2 (100)</label><input type="number" oninput="up('m2',this.value)" value="${sub.scores.m2||''}"></div>
                 <div><label>Mid3 (100)</label><input type="number" oninput="up('m3',this.value)" value="${sub.scores.m3||''}"></div>
-                <div><label>HW (140)</label><input type="number" oninput="up('hw',this.value)" value="${sub.scores.hw||''}"></div>
+                <div><label>Homework (140)</label><input type="number" oninput="up('hw',this.value)" value="${sub.scores.hw||''}"></div>
                 <div><label>Labs (100)</label><input type="number" oninput="up('lb',this.value)" value="${sub.scores.lb||''}"></div>
+                <div><label>Prelabs (30)</label><input type="number" oninput="up('plb',this.value)" value="${sub.scores.plb||''}"></div>
                 <div><label>Disc Quiz (140)</label><input type="number" oninput="up('dq',this.value)" value="${sub.scores.dq||''}"></div>
-                <div><label>Prelec/CP (50)</label><input type="number" oninput="up('pc',this.value)" value="${sub.scores.pc||''}"></div>
+                <div><label>Prelec (25)</label><input type="number" oninput="up('pc',this.value)" value="${sub.scores.pc||''}"></div>
+                <div><label>Checkpoints (25)</label><input type="number" oninput="up('cp',this.value)" value="${sub.scores.cp||''}"></div>
                 <div><label>iClicker (25)</label><input type="number" oninput="up('ic',this.value)" value="${sub.scores.ic||''}"></div>
-                <div><label>Lab Prac (15)</label><input type="number" oninput="up('lp',this.value)" value="${sub.scores.lp||''}"></div>
-                <div class="full"><label>Bonus (25)</label><input type="number" oninput="up('bn',this.value)" value="${sub.scores.bn||''}"></div>
+                <div><label>Prac Prelab (5)</label><input type="number" oninput="up('lp_p',this.value)" value="${sub.scores.lp_p||''}"></div>
+                <div><label>Prac Class (10)</label><input type="number" oninput="up('lp_c',this.value)" value="${sub.scores.lp_c||''}"></div>
+                <div class="full"><label>Bonus (Max 25)</label><input type="number" oninput="up('bn',this.value)" value="${sub.scores.bn||''}"></div>
             </div>`;
-            targetHtml = `<option value="950">A (950)</option><option value="920">A- (920)</option><option value="880">B+ (880)</option><option value="860">B (860)</option><option value="800">B- (800)</option>`;
+            targetHtml = `<option value="950">A+ (950)</option><option value="920">A (920)</option><option value="900">A- (900)</option><option value="880">B+ (880)</option><option value="860">B (860)</option><option value="835">B- (835)</option><option value="810">C+ (810)</option><option value="780">C (780)</option>`;
         } else if(sub.type === 'phys225') {
             html = `<div class="grid">
                 <div><label>Lectures (200)</label><input type="number" oninput="up('lec',this.value)" value="${sub.scores.lec||''}"></div>
@@ -162,7 +165,8 @@
 
         if(s.type === 'phys212') {
             const d = s.scores;
-            const ptsSoFar = (d.m1||0)+(d.m2||0)+(d.m3||0)+(d.hw||0)+(d.dq||0)+(d.lb||0)+(d.pc||0)+(d.ic||0)+(d.lp||0)+(d.bn||0);
+            // Sum of all points excluding the 200pt Final Exam
+            const ptsSoFar = (d.m1||0)+(d.m2||0)+(d.m3||0)+(d.hw||0)+(d.lb||0)+(d.plb||0)+(d.dq||0)+(d.pc||0)+(d.cp||0)+(d.ic||0)+(d.lp_p||0)+(d.lp_c||0)+(d.bn||0);
             res = ((tVal - ptsSoFar) / 200) * 100;
         } else if(s.type === 'phys225') {
             const d = s.scores;
