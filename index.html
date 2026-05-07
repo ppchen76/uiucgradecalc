@@ -160,7 +160,7 @@
 
         if(s.type === 'phys212') {
             const d = s.scores;
-            // Sum of 800 available non-final points
+            // Sum of all non-final points: (300 Exams) + (140 HW) + (140 DQ) + (130 Labs/Prelabs) + (75 Lecture comp) + (15 Lab Practical) + (25 Bonus)
             const ptsSoFar = (d.m1||0)+(d.m2||0)+(d.m3||0)+(d.hw||0)+(d.lb||0)+(d.plb||0)+(d.dq||0)+(d.pc||0)+(d.cp||0)+(d.ic||0)+(d.lp_p||0)+(d.lp_c||0)+(d.bn||0);
             res = ((tVal - ptsSoFar) / 200) * 100;
         } else if(s.type === 'phys225') {
@@ -180,4 +180,21 @@
             res = rep <= ms[0] ? nor : rep;
         } else if(s.type === 'python') {
             const d = s.scores;
-            const fixed = (d.sq*0.02||0)+(d.at*0.03||0)+(d.la*0
+            const fixed = (d.sq*0.02||0)+(d.at*0.03||0)+(d.la*0.1||0)+(d.nh*0.08||0)+(d.lh*0.05||0)+(d.pq*0.06||0);
+            const ms = [d.m1||0, d.m2||0, d.m3||0].sort((a,b)=>a-b);
+            const rep = (tVal - fixed - (ms[1]*0.16) - (ms[2]*0.16)) / 0.34;
+            const nor = (tVal - fixed - (ms[0]*0.16) - (ms[1]*0.16) - (ms[2]*0.16)) / 0.18;
+            res = rep <= ms[0] ? nor : rep;
+        }
+        
+        const div = document.getElementById('result');
+        div.style.display = 'block';
+        div.style.background = res > 100 ? "#fff8c5" : "#dafbe1";
+        div.innerHTML = `Final Exam Score Needed: <strong>${res.toFixed(2)}%</strong>`;
+    }
+
+    function deleteSubject() { if(confirm("Delete " + current + "?")) { delete subjects[current]; current = null; save(); renderTabs(); document.getElementById('calcArea').style.display = 'none'; } }
+    renderTabs();
+</script>
+</body>
+</html>
