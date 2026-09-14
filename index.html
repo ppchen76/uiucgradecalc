@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Physics Grade Calculator — UIUC</title>
+<title>Grade Calculator — UIUC</title>
 <link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:wght@400;600&family=IBM+Plex+Sans:wght@300;400;600&display=swap" rel="stylesheet">
 <style>
   :root {
@@ -57,6 +57,7 @@
     background: var(--blue);
     padding: 0 32px;
     gap: 4px;
+    flex-wrap: wrap;
   }
 
   .tab {
@@ -261,7 +262,7 @@
     font-size: 0.78rem;
     color: var(--muted);
     text-align: right;
-    min-width: 80px;
+    min-width: 90px;
   }
 
   .bonus-note {
@@ -296,14 +297,15 @@
 <header>
   <div class="block-i">I</div>
   <div>
-    <h1>Physics Grade Calculator</h1>
-    <p>University of Illinois at Urbana-Champaign · Spring 2026</p>
+    <h1>Grade Calculator</h1>
+    <p>University of Illinois at Urbana-Champaign · Fall 2026</p>
   </div>
 </header>
 
 <div class="tabs">
   <div class="tab active" onclick="switchTab('p214')">PHYS 214</div>
   <div class="tab" onclick="switchTab('p325')">PHYS 325</div>
+  <div class="tab" onclick="switchTab('s385')">STAT 385</div>
 </div>
 
 <div class="content">
@@ -420,63 +422,59 @@
   <!-- ===== PHYS 325 ===== -->
   <div class="panel" id="panel-p325">
 
-    <div class="section-label">Participation</div>
+    <div class="section-label">Course learning activities</div>
     <div class="grid">
       <div class="field">
         <label>Lectures (best 24 of 27)</label>
         <div class="field-row">
-          <input type="number" id="325-lectures" min="0" max="44" step="0.1" placeholder="0" oninput="calc325()">
-          <span class="max">/ 44 pts</span>
+          <input type="number" id="325-lectures" min="0" max="40" step="0.1" placeholder="0" oninput="calc325()">
+          <span class="max">/ 40 pts</span>
         </div>
-        <div class="note">3 lowest dropped</div>
+        <div class="note">3 lowest dropped · 4% of grade</div>
       </div>
       <div class="field">
-        <label>Discussions (best 13 of 14)</label>
+        <label>Discussions (best 12 of 13)</label>
         <div class="field-row">
-          <input type="number" id="325-disc" min="0" max="126" step="0.1" placeholder="0" oninput="calc325()">
-          <span class="max">/ 126 pts</span>
+          <input type="number" id="325-disc" min="0" max="130" step="0.1" placeholder="0" oninput="calc325()">
+          <span class="max">/ 130 pts</span>
         </div>
-        <div class="note">1 lowest dropped · &gt;10 min late = −20% · &gt;30 min = absent</div>
+        <div class="note">1 lowest dropped · &gt;10 min late = −20% · &gt;30 min = absent · 13% of grade</div>
       </div>
-    </div>
-
-    <div class="section-label">Homework</div>
-    <div class="grid">
       <div class="field">
         <label>Homework (best 10 of 11 sets)</label>
         <div class="field-row">
-          <input type="number" id="325-hw" min="0" max="330" step="0.1" placeholder="0" oninput="calc325()">
-          <span class="max">/ 330 pts</span>
+          <input type="number" id="325-hw" min="0" max="300" step="0.1" placeholder="0" oninput="calc325()">
+          <span class="max">/ 300 pts</span>
         </div>
-        <div class="note">1 lowest dropped · late ≤1 wk: −20% · late &gt;1 wk: 0</div>
+        <div class="note">1 lowest dropped · late ≤1 wk: −20% · late &gt;1 wk: 0 · 30% of grade</div>
       </div>
     </div>
 
     <div class="section-label">Exams</div>
     <div class="grid">
       <div class="field">
-        <label>Midterm 1</label>
+        <label>Hour Exam 1</label>
         <div class="field-row">
-          <input type="number" id="325-mid1" min="0" max="150" step="0.1" placeholder="0" oninput="calc325()">
-          <span class="max">/ 150 pts</span>
+          <input type="number" id="325-mid1" min="0" max="160" step="0.1" placeholder="0" oninput="calc325()">
+          <span class="max">/ 160 pts</span>
         </div>
-        <div class="note">15% of grade</div>
+        <div class="note">16% of grade</div>
       </div>
       <div class="field">
-        <label>Midterm 2</label>
+        <label>Hour Exam 2</label>
         <div class="field-row">
-          <input type="number" id="325-mid2" min="0" max="150" step="0.1" placeholder="0" oninput="calc325()">
-          <span class="max">/ 150 pts</span>
+          <input type="number" id="325-mid2" min="0" max="160" step="0.1" placeholder="0" oninput="calc325()">
+          <span class="max">/ 160 pts</span>
         </div>
-        <div class="note">15% of grade</div>
+        <div class="note">16% of grade</div>
       </div>
       <div class="field">
         <label>Final Exam</label>
         <div class="field-row">
-          <input type="number" id="325-final" min="0" max="200" step="0.1" placeholder="0" oninput="calc325()">
-          <span class="max">/ 200 pts</span>
+          <input type="number" id="325-final" min="0" max="210" step="0.1" placeholder="0" oninput="calc325()">
+          <span class="max">/ 210 pts</span>
         </div>
-        <div class="note">20% of grade</div>
+        <div class="note">21% of grade</div>
       </div>
     </div>
 
@@ -510,11 +508,91 @@
     <button class="reset-btn" onclick="reset325()">↺ Reset all fields</button>
   </div>
 
+  <!-- ===== STAT 385 ===== -->
+  <div class="panel" id="panel-s385">
+
+    <div class="section-label">Course components (enter as a % score for each)</div>
+    <div class="grid">
+      <div class="field">
+        <label>Classwork</label>
+        <div class="field-row">
+          <input type="number" id="385-classwork" min="0" max="100" step="0.1" placeholder="0" oninput="calc385()">
+          <span class="max">% · wt 10%</span>
+        </div>
+        <div class="note">In-class pair/group coding &amp; participation</div>
+      </div>
+      <div class="field">
+        <label>Practice Problems (best 5 of 6)</label>
+        <div class="field-row">
+          <input type="number" id="385-practice" min="0" max="100" step="0.1" placeholder="0" oninput="calc385()">
+          <span class="max">% · wt 10%</span>
+        </div>
+        <div class="note">Lowest score dropped</div>
+      </div>
+      <div class="field">
+        <label>Challenge Problems (best 5 of 6)</label>
+        <div class="field-row">
+          <input type="number" id="385-challenge" min="0" max="100" step="0.1" placeholder="0" oninput="calc385()">
+          <span class="max">% · wt 20%</span>
+        </div>
+        <div class="note">Lowest score dropped</div>
+      </div>
+      <div class="field">
+        <label>Midterm Report</label>
+        <div class="field-row">
+          <input type="number" id="385-midterm" min="0" max="100" step="0.1" placeholder="0" oninput="calc385()">
+          <span class="max">% · wt 30%</span>
+        </div>
+        <div class="note">Markdown research report on provided dataset</div>
+      </div>
+      <div class="field">
+        <label>Final Project</label>
+        <div class="field-row">
+          <input type="number" id="385-final" min="0" max="100" step="0.1" placeholder="0" oninput="calc385()">
+          <span class="max">% · wt 30%</span>
+        </div>
+        <div class="note">Shiny web-app on a topic of your choosing</div>
+      </div>
+    </div>
+
+    <div class="section-label">Bonus</div>
+    <div class="grid">
+      <div class="field">
+        <label>Extra Credit</label>
+        <div class="field-row">
+          <input type="number" id="385-bonus" min="0" max="20" step="0.1" placeholder="0" oninput="calc385()">
+          <span class="max">pts</span>
+        </div>
+        <div class="note">Instructor may add extra credit at their discretion — enter if announced</div>
+      </div>
+    </div>
+
+    <div class="result-card" id="385-result">
+      <div class="result-score">
+        <div class="label">Total Score</div>
+        <div class="value" id="385-total">0</div>
+        <div class="out-of">/ 100%</div>
+        <div class="progress-bar"><div class="progress-fill" id="385-bar" style="width:0%"></div></div>
+      </div>
+      <div class="result-grade">
+        <div class="grade-letter" id="385-grade">—</div>
+        <div class="grade-range" id="385-range"></div>
+      </div>
+    </div>
+
+    <div class="breakdown" id="385-breakdown"></div>
+
+    <div class="bonus-note">Grading scale cutoffs are absolute (no A+ in this course; instructor may curve up but not down).</div>
+
+    <button class="reset-btn" onclick="reset385()">↺ Reset all fields</button>
+  </div>
+
 </div>
 
 <script>
   function switchTab(course) {
-    document.querySelectorAll('.tab').forEach((t,i) => t.classList.toggle('active', ['p214','p325'][i] === course));
+    const order = ['p214','p325','s385'];
+    document.querySelectorAll('.tab').forEach((t,i) => t.classList.toggle('active', order[i] === course));
     document.querySelectorAll('.panel').forEach(p => p.classList.remove('active'));
     document.getElementById('panel-' + course).classList.add('active');
   }
@@ -558,6 +636,22 @@
     {letter:'F',  min:0,    max:499.99},
   ];
 
+  // ---- STAT 385 grade table (percent scale, no A+) ----
+  const grades385 = [
+    {letter:'A',  min:92, max:100},
+    {letter:'A-', min:89, max:91.99},
+    {letter:'B+', min:88, max:88.99},
+    {letter:'B',  min:82, max:87.99},
+    {letter:'B-', min:78, max:81.99},
+    {letter:'C+', min:77, max:77.99},
+    {letter:'C',  min:71, max:76.99},
+    {letter:'C-', min:70, max:70.99},
+    {letter:'D+', min:68, max:69.99},
+    {letter:'D',  min:61, max:67.99},
+    {letter:'D-', min:60, max:60.99},
+    {letter:'F',  min:0,  max:59.99},
+  ];
+
   function getGrade(score, table) {
     for (const g of table) {
       if (score >= g.min) return g;
@@ -565,7 +659,7 @@
     return table[table.length - 1];
   }
 
-  function renderBreakdown(containerId, rows) {
+  function renderBreakdown(containerId, rows, unit) {
     const el = document.getElementById(containerId);
     el.innerHTML = '<div class="section-label">Score Breakdown</div>';
     rows.forEach(r => {
@@ -574,7 +668,7 @@
         <div class="breakdown-row">
           <span class="breakdown-name">${r.name}</span>
           <div class="breakdown-bar-wrap"><div class="breakdown-bar" style="width:${pct}%"></div></div>
-          <span class="breakdown-pts">${r.pts.toFixed(1)} / ${r.max}</span>
+          <span class="breakdown-pts">${r.pts.toFixed(1)}${unit || ''} / ${r.max}${unit || ''}</span>
         </div>`;
     });
   }
@@ -612,12 +706,12 @@
   }
 
   function calc325() {
-    const lec   = Math.min(val('325-lectures'), 44);
-    const disc  = Math.min(val('325-disc'), 126);
-    const hw    = Math.min(val('325-hw'), 330);
-    const mid1  = Math.min(val('325-mid1'), 150);
-    const mid2  = Math.min(val('325-mid2'), 150);
-    const fin   = Math.min(val('325-final'), 200);
+    const lec   = Math.min(val('325-lectures'), 40);
+    const disc  = Math.min(val('325-disc'), 130);
+    const hw    = Math.min(val('325-hw'), 300);
+    const mid1  = Math.min(val('325-mid1'), 160);
+    const mid2  = Math.min(val('325-mid2'), 160);
+    const fin   = Math.min(val('325-final'), 210);
     const bonus = Math.min(val('325-bonus'), 28);
 
     const base = lec + disc + hw + mid1 + mid2 + fin;
@@ -630,13 +724,45 @@
     document.getElementById('325-range').textContent = g.min + ' – ' + g.max;
 
     renderBreakdown('325-breakdown', [
-      {name:'Lectures', pts:lec, max:44},
-      {name:'Discussions', pts:disc, max:126},
-      {name:'Homework', pts:hw, max:330},
-      {name:'Midterm 1', pts:mid1, max:150},
-      {name:'Midterm 2', pts:mid2, max:150},
-      {name:'Final Exam', pts:fin, max:200},
+      {name:'Lectures', pts:lec, max:40},
+      {name:'Discussions', pts:disc, max:130},
+      {name:'Homework', pts:hw, max:300},
+      {name:'Hour Exam 1', pts:mid1, max:160},
+      {name:'Hour Exam 2', pts:mid2, max:160},
+      {name:'Final Exam', pts:fin, max:210},
       {name:'Office Hours Bonus', pts:bonus, max:28},
+    ]);
+  }
+
+  function calc385() {
+    const classwork = Math.min(val('385-classwork'), 100);
+    const practice  = Math.min(val('385-practice'), 100);
+    const challenge = Math.min(val('385-challenge'), 100);
+    const midterm   = Math.min(val('385-midterm'), 100);
+    const final     = Math.min(val('385-final'), 100);
+    const bonus     = val('385-bonus');
+
+    const classworkPts = classwork * 0.10;
+    const practicePts  = practice * 0.10;
+    const challengePts = challenge * 0.20;
+    const midtermPts   = midterm * 0.30;
+    const finalPts      = final * 0.30;
+
+    const total = classworkPts + practicePts + challengePts + midtermPts + finalPts + bonus;
+    const g = getGrade(total, grades385);
+
+    document.getElementById('385-total').textContent = total.toFixed(1);
+    document.getElementById('385-bar').style.width = Math.min(100, total) + '%';
+    document.getElementById('385-grade').textContent = g.letter;
+    document.getElementById('385-range').textContent = g.min + ' – ' + g.max;
+
+    renderBreakdown('385-breakdown', [
+      {name:'Classwork (10%)', pts:classworkPts, max:10},
+      {name:'Practice Problems (10%)', pts:practicePts, max:10},
+      {name:'Challenge Problems (20%)', pts:challengePts, max:20},
+      {name:'Midterm Report (30%)', pts:midtermPts, max:30},
+      {name:'Final Project (30%)', pts:finalPts, max:30},
+      {name:'Extra Credit', pts:bonus, max:Math.max(bonus,0)},
     ]);
   }
 
@@ -658,6 +784,16 @@
     document.getElementById('325-grade').textContent = '—';
     document.getElementById('325-range').textContent = '';
     document.getElementById('325-breakdown').innerHTML = '';
+  }
+
+  function reset385() {
+    ['385-classwork','385-practice','385-challenge','385-midterm','385-final','385-bonus']
+      .forEach(id => document.getElementById(id).value = '');
+    document.getElementById('385-total').textContent = '0';
+    document.getElementById('385-bar').style.width = '0%';
+    document.getElementById('385-grade').textContent = '—';
+    document.getElementById('385-range').textContent = '';
+    document.getElementById('385-breakdown').innerHTML = '';
   }
 </script>
 </body>
