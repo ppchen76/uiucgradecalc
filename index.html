@@ -306,6 +306,7 @@
   <div class="tab active" onclick="switchTab('p214')">PHYS 214</div>
   <div class="tab" onclick="switchTab('p325')">PHYS 325</div>
   <div class="tab" onclick="switchTab('s385')">STAT 385</div>
+  <div class="tab" onclick="switchTab('s200')">STAT 200</div>
 </div>
 
 <div class="content">
@@ -587,11 +588,152 @@
     <button class="reset-btn" onclick="reset385()">↺ Reset all fields</button>
   </div>
 
+  <!-- ===== STAT 200 ===== -->
+  <div class="panel" id="panel-s200">
+
+    <div class="section-label">Ungraded / auto-graded components</div>
+    <div class="grid">
+      <div class="field">
+        <label>Wed/Fri TP Activities (best 18 of 22)</label>
+        <div class="field-row">
+          <input type="number" id="200-tp" min="0" max="90" step="0.1" placeholder="0" oninput="calc200()">
+          <span class="max">/ 90 pts</span>
+        </div>
+        <div class="note">4 lowest dropped · completion-based</div>
+      </div>
+      <div class="field">
+        <label>TinkerPlots Pre-work (4 assignments)</label>
+        <div class="field-row">
+          <input type="number" id="200-prework" min="0" max="30" step="0.1" placeholder="0" oninput="calc200()">
+          <span class="max">/ 30 pts</span>
+        </div>
+        <div class="note">Due before each assigned activity</div>
+      </div>
+      <div class="field">
+        <label>Video Lecture Quizzes (best 38 of 49)</label>
+        <div class="field-row">
+          <input type="number" id="200-video" min="0" max="190" step="0.1" placeholder="0" oninput="calc200()">
+          <span class="max">/ 190 pts</span>
+        </div>
+        <div class="note">Worst 11 dropped · one attempt each</div>
+      </div>
+      <div class="field">
+        <label>Monday R Assignments (best 9 of 12)</label>
+        <div class="field-row">
+          <input type="number" id="200-rhw" min="0" max="225" step="0.1" placeholder="0" oninput="calc200()">
+          <span class="max">/ 225 pts</span>
+        </div>
+        <div class="note">Worst 3 dropped · highest of 2 attempts</div>
+      </div>
+    </div>
+
+    <div class="section-label">Manually graded components</div>
+    <div class="grid">
+      <div class="field">
+        <label>TinkerPlots Homework (best 3 of 4)</label>
+        <div class="field-row">
+          <input type="number" id="200-tphw" min="0" max="150" step="0.1" placeholder="0" oninput="calc200()">
+          <span class="max">/ 150 pts</span>
+        </div>
+        <div class="note">1 dropped · select questions graded, rest for completion</div>
+      </div>
+      <div class="field">
+        <label>Midterm 1 (Oct 12)</label>
+        <div class="field-row">
+          <input type="number" id="200-mid1" min="0" max="250" step="0.1" placeholder="0" oninput="calc200()">
+          <span class="max">/ 250 pts</span>
+        </div>
+        <div class="note">Assumed even split of 500 total</div>
+      </div>
+      <div class="field">
+        <label>Midterm 2 (Dec 7)</label>
+        <div class="field-row">
+          <input type="number" id="200-mid2" min="0" max="250" step="0.1" placeholder="0" oninput="calc200()">
+          <span class="max">/ 250 pts</span>
+        </div>
+        <div class="note">Assumed even split of 500 total</div>
+      </div>
+      <div class="field">
+        <label>Participation (group effort + surveys)</label>
+        <div class="field-row">
+          <input type="number" id="200-participation" min="0" max="60" step="0.1" placeholder="0" oninput="calc200()">
+          <span class="max">/ 60 pts</span>
+        </div>
+        <div class="note">Instructor discretion + reflection surveys</div>
+      </div>
+    </div>
+
+    <div class="section-label">Attendance penalty</div>
+    <div class="grid">
+      <div class="field">
+        <label>Absences beyond your first 6</label>
+        <div class="field-row">
+          <input type="number" id="200-absences" min="0" step="1" placeholder="0" oninput="calc200()">
+          <span class="max">× −25 pts</span>
+        </div>
+        <div class="note">First 6 absences are penalty-free</div>
+      </div>
+    </div>
+
+    <div class="section-label">Extra credit</div>
+    <div class="grid">
+      <div class="field">
+        <label>Exit Cards with a perfect score</label>
+        <div class="field-row">
+          <select id="200-exitcards" onchange="calc200()" style="flex:1;border:none;outline:none;font-family:var(--mono);font-size:1rem;font-weight:600;background:transparent;">
+            <option value="0">0 or 1 (+0 pts)</option>
+            <option value="2">2 (+3 pts)</option>
+            <option value="3">3 (+5 pts)</option>
+            <option value="4">4 (+8 pts)</option>
+            <option value="5">5 (+10 pts)</option>
+            <option value="6">6 (+10 pts)</option>
+          </select>
+        </div>
+        <div class="note">Out of 6 total exit cards</div>
+      </div>
+      <div class="field">
+        <label>Extra R HW (extra topic)</label>
+        <div class="field-row">
+          <input type="number" id="200-rhwec" min="0" max="20" step="0.1" placeholder="0" oninput="calc200()">
+          <span class="max">/ 20 pts</span>
+        </div>
+        <div class="note">Optional bonus assignment</div>
+      </div>
+      <div class="field">
+        <label>EC Video Quiz</label>
+        <div class="field-row">
+          <input type="number" id="200-videoec" min="0" max="5" step="0.1" placeholder="0" oninput="calc200()">
+          <span class="max">/ 5 pts</span>
+        </div>
+        <div class="note">Optional bonus quiz</div>
+      </div>
+    </div>
+
+    <div class="result-card" id="200-result">
+      <div class="result-score">
+        <div class="label">Total Score</div>
+        <div class="value" id="200-total">0%</div>
+        <div class="out-of" id="200-outof">0 / 1250 pts</div>
+        <div class="progress-bar"><div class="progress-fill" id="200-bar" style="width:0%"></div></div>
+      </div>
+      <div class="result-grade">
+        <div class="grade-letter" id="200-grade">—</div>
+        <div class="grade-range" id="200-range"></div>
+      </div>
+    </div>
+
+    <div class="breakdown" id="200-breakdown"></div>
+
+    <div class="bonus-note">The syllabus lists 1250 points total, but the eight graded categories sum to 1245 (a 5&nbsp;pt gap, likely a syllabus rounding quirk) — 1250 is used as the denominator here since it's stated explicitly. Midterms are assumed split 250/250 from the stated 500&nbsp;pt total. Each absence past your first 6 costs 25 pts (2%).</div>
+
+    <button class="reset-btn" onclick="reset200()">↺ Reset all fields</button>
+  </div>
+
 </div>
 
 <script>
   function switchTab(course) {
-    const order = ['p214','p325','s385'];
+    const order = ['p214','p325','s385','s200'];
     document.querySelectorAll('.tab').forEach((t,i) => t.classList.toggle('active', order[i] === course));
     document.querySelectorAll('.panel').forEach(p => p.classList.remove('active'));
     document.getElementById('panel-' + course).classList.add('active');
@@ -651,6 +793,25 @@
     {letter:'D-', min:60, max:60.99},
     {letter:'F',  min:0,  max:59.99},
   ];
+
+  // ---- STAT 200 grade table (percent scale) ----
+  const grades200 = [
+    {letter:'A+', min:99, max:100},
+    {letter:'A',  min:93, max:98.99},
+    {letter:'A-', min:90, max:92.99},
+    {letter:'B+', min:87, max:89.99},
+    {letter:'B',  min:83, max:86.99},
+    {letter:'B-', min:80, max:82.99},
+    {letter:'C+', min:77, max:79.99},
+    {letter:'C',  min:73, max:76.99},
+    {letter:'C-', min:70, max:72.99},
+    {letter:'D+', min:67, max:69.99},
+    {letter:'D',  min:63, max:66.99},
+    {letter:'D-', min:60, max:62.99},
+    {letter:'F',  min:0,  max:59.99},
+  ];
+
+  const exitCardEC = {0:0, 1:0, 2:3, 3:5, 4:8, 5:10, 6:10};
 
   function getGrade(score, table) {
     for (const g of table) {
@@ -764,6 +925,63 @@
       {name:'Final Project (30%)', pts:finalPts, max:30},
       {name:'Extra Credit', pts:bonus, max:Math.max(bonus,0)},
     ]);
+  }
+
+  function calc200() {
+    const tp     = Math.min(val('200-tp'), 90);
+    const pre    = Math.min(val('200-prework'), 30);
+    const video  = Math.min(val('200-video'), 190);
+    const rhw    = Math.min(val('200-rhw'), 225);
+    const tphw   = Math.min(val('200-tphw'), 150);
+    const mid1   = Math.min(val('200-mid1'), 250);
+    const mid2   = Math.min(val('200-mid2'), 250);
+    const partic = Math.min(val('200-participation'), 60);
+
+    const absences = val('200-absences');
+    const absencePenalty = absences * 25;
+
+    const exitSel = parseInt(document.getElementById('200-exitcards').value, 10) || 0;
+    const exitEC = exitCardEC[exitSel] || 0;
+    const rhwEC = Math.min(val('200-rhwec'), 20);
+    const videoEC = Math.min(val('200-videoec'), 5);
+
+    const base = tp + pre + video + rhw + tphw + mid1 + mid2 + partic;
+    const totalPts = Math.max(0, base + exitEC + rhwEC + videoEC - absencePenalty);
+    const percent = (totalPts / 1250) * 100;
+    const g = getGrade(percent, grades200);
+
+    document.getElementById('200-total').textContent = percent.toFixed(1) + '%';
+    document.getElementById('200-outof').textContent = totalPts.toFixed(1) + ' / 1250 pts';
+    document.getElementById('200-bar').style.width = Math.min(100, percent) + '%';
+    document.getElementById('200-grade').textContent = g.letter;
+    document.getElementById('200-range').textContent = g.min + ' – ' + g.max;
+
+    renderBreakdown('200-breakdown', [
+      {name:'TP Activities', pts:tp, max:90},
+      {name:'TP Pre-work', pts:pre, max:30},
+      {name:'Video Quizzes', pts:video, max:190},
+      {name:'Monday R Assignments', pts:rhw, max:225},
+      {name:'TinkerPlots HW', pts:tphw, max:150},
+      {name:'Midterm 1', pts:mid1, max:250},
+      {name:'Midterm 2', pts:mid2, max:250},
+      {name:'Participation', pts:partic, max:60},
+      {name:'Exit Card EC', pts:exitEC, max:10},
+      {name:'Extra R HW EC', pts:rhwEC, max:20},
+      {name:'EC Video Quiz', pts:videoEC, max:5},
+      {name:'Absence Penalty', pts:-absencePenalty, max:0},
+    ]);
+  }
+
+  function reset200() {
+    ['200-tp','200-prework','200-video','200-rhw','200-tphw','200-mid1','200-mid2','200-participation','200-absences','200-rhwec','200-videoec']
+      .forEach(id => document.getElementById(id).value = '');
+    document.getElementById('200-exitcards').value = '0';
+    document.getElementById('200-total').textContent = '0%';
+    document.getElementById('200-outof').textContent = '0 / 1250 pts';
+    document.getElementById('200-bar').style.width = '0%';
+    document.getElementById('200-grade').textContent = '—';
+    document.getElementById('200-range').textContent = '';
+    document.getElementById('200-breakdown').innerHTML = '';
   }
 
   function reset214() {
